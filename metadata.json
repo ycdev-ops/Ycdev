@@ -1,0 +1,8 @@
+{
+  "name": "YcDev",
+  "description": "Studio rekayasa perangkat lunak, Internet of Things (IoT), pengembangan full-stack, dan keamanan siber di Semarang Barat oleh Yuan Nugroho.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
