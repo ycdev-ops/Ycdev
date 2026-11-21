@@ -4,6 +4,65 @@ import type { LoopHandle, ProceduralTextureSet, ShowcaseMaterials } from './webg
 // Utilitas WebGL dibungkus factory supaya modul ini bisa diimpor statis oleh
 // komponen tanpa menarik three.js ke bundle utama. three.js sendiri dimuat
 // malas lewat loadThree() pada saat renderer WebGL siap dibuat.
+
+/**
+ * Antrean pembuatan konteks WebGL.
+ *
+ * Halaman ini punya empat komponen WebGL. Bila semuanya membuat konteksnya
+ * serentak, perangkat dengan GPU terintegrasi/software-GL kehabisan anggaran
+ * konteks: yang kalah melempar "Web page caused context loss and was blocked"
+ * dan viewportnya diam-diam kosong. Antrean ini membuat hanya satu konteks
+ * aktif pada satu waktu, jadi setiap komponen punya peluang yang adil.
+ */
+const webglQueue: Array<() => void> = [];
+let webglBusy = false;
+
+function pumpWebglQueue() {
+  if (webglBusy) return;
+  const next = webglQueue.shift();
+  if (!next) return;
+  webglBusy = true;
+  try {
+    next();
+  } catch {
+    // Abaikan: penolak antrean tetap dipanggil lewat finally di bawah.
+  } finally {
+    webglBusy = false;
+    pumpWebglQueue();
+  }
+}
+
+/**
+ * Jalankan `task(release)` satu giliran pada antrean, lalu lepaskan giliran.
+ *
+ * Setiap komponen mendapat SATU percobaan di gilirannya. Ini disengaja: kalau
+ * pemanggil boleh menahan giliran sejarya, komponen pertama yang gagal akan
+ * menahan antrean selamanya dan komponen lain tidak pernah dicoba.
+ */
+export function requestWebglContext(
+  task: (release: () => void) => void | Promise<void>
+): void {
+  webglQueue.push(() => {
+    const release = () => pumpWebglQueue();
+    try {
+      const out = task(release);
+      if (out && typeof (out as Promise<void>).finally === 'function') {
+        void (out as Promise<void>).then(release, release);
+      } else {
+        release();
+      }
+    } catch {
+      release();
+    }
+  });
+  pumpWebglQueue();
+}
+
+/** Kompatibilitas: giliran selalu dilepas otomatis. */
+export function releaseWebglContext(): void {
+  pumpWebglQueue();
+}
+
 export function createWebglUtils(THREE: typeof import('three')) {
   /**
    * Uji dukungan WebGL SEKALI dengan canvas probe yang sengaja dibuang (context
@@ -24,44 +83,6 @@ export function createWebglUtils(THREE: typeof import('three')) {
     const gpu = String(gl.getParameter(param) || '');
     gl.getExtension('WEBGL_lose_context')?.loseContext();
     return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
-  }
-
-  /**
-   * true = WebGL praktis tidak bisa dipakai untuk three.js (tanpa konteks, atau
-   * WebGL2 tanpa OES_packed_depth_stencil). Komponen harus menampilkan fallback.
-   */
-  function isWebglUnsupported(): boolean {
-    if (typeof document === 'undefined') return true;
-    const canvas = document.createElement('canvas');
-    const gl2 = canvas.getContext('webgl2');
-    if (gl2) {
-      const packed = !!gl2.getExtension('OES_packed_depth_stencil');
-      gl2.getExtension('WEBGL_lose_context')?.loseContext();
-      return !packed;
-    }
-    // WebGL2 tidak ada: WebGL1 masih bisa dipakai three.js.
-    const gl1 = canvas.getContext('webgl');
-    if (!gl1) {
-      canvas.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
-      return true;
-    }
-    gl1.getExtension('WEBGL_lose_context')?.loseContext();
-    return false;
-  }
-
-  /** Pesan pendek untuk fallback, menyebut penyebabnya. */
-  function webglFallbackReason(): string {
-    if (typeof document === 'undefined') return 'Peramban tidak mendukung WebGL.';
-    const canvas = document.createElement('canvas');
-    const gl2 = canvas.getContext('webgl2');
-    if (gl2) {
-      const packed = !!gl2.getExtension('OES_packed_depth_stencil');
-      gl2.getExtension('WEBGL_lose_context')?.loseContext();
-      return packed
-        ? 'Perangkat tidak mampu membuka viewport 3D.'
-        : 'Kartu grafis perangkat tidak mendukung WebGL2 penuh (OES_packed_depth_stencil).';
-    }
-    return 'Peramban tidak menyediakan konteks WebGL.';
   }
 
   function createPacedRenderLoop(
@@ -500,8 +521,6 @@ export function createWebglUtils(THREE: typeof import('three')) {
 
   return {
     detectSoftwareWebGL,
-    isWebglUnsupported,
-    webglFallbackReason,
     createPacedRenderLoop,
     createProceduralTextures,
     createShowcaseMaterials,

@@ -18,7 +18,7 @@ import {
   type SemarangMapStyle,
   type SemarangMapTilt,
 } from '../three/semarangMapScene';
-import { createWebglUtils } from '../three/webglUtils';
+import { createWebglUtils, requestWebglContext } from '../three/webglUtils';
 import type { LoopHandle } from '../three/webglTypes';
 
 export function Semarang3DMapCanvas() {
@@ -29,7 +29,6 @@ export function Semarang3DMapCanvas() {
   const [mapStyle, setMapStyle] = useState<SemarangMapStyle>('satellite');
   const [tiltMode, setTiltMode] = useState<SemarangMapTilt>('3d');
   const [mapWebglBlocked, setMapWebglBlocked] = useState(false);
-  const [mapWebglBlockedReason, setMapWebglBlockedReason] = useState('');
 
   const controlStateRef = useRef<{
     focus: SemarangMapFocus;
@@ -66,7 +65,9 @@ export function Semarang3DMapCanvas() {
     let cancelled = false;
     let cleanup: (() => void) | null = null;
 
-    loadThree().then(async (THREE) => {
+    requestWebglContext(async () => {
+      if (cancelled) return;
+      const THREE = await loadThree();
       if (cancelled) return;
       const [{ OrbitControls }, { RoomEnvironment }] = await Promise.all([
         import('three/addons/controls/OrbitControls.js'),
@@ -75,24 +76,23 @@ export function Semarang3DMapCanvas() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop, isWebglUnsupported, webglFallbackReason } =
-        webgl;
-
-      if (isWebglUnsupported()) {
-        setMapWebglBlocked(true);
-        setMapWebglBlockedReason(webglFallbackReason());
-        return;
-      }
+      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 560;
       const height = container.clientHeight || 340;
 
-      const renderer = new THREE.WebGLRenderer({
-        antialias: !isSoftwareGl,
-        alpha: false,
-        powerPreference: 'high-performance',
-      });
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          antialias: !isSoftwareGl,
+          alpha: false,
+          powerPreference: 'high-performance',
+        });
+      } catch {
+        setMapWebglBlocked(true);
+        return;
+      }
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
@@ -258,7 +258,8 @@ export function Semarang3DMapCanvas() {
                 Peta 3D tidak dapat dibuka
               </p>
               <p className="mt-1.5 text-[11px] leading-relaxed text-slate-300">
-                {mapWebglBlockedReason || 'Perangkat tidak mendukung WebGL.'}
+                Peramban atau perangkat ini menolak membuka konteks WebGL untuk
+                peta 3D.
               </p>
               <a
                 href={STUDIO_PROFILE.googleMapsUrl}

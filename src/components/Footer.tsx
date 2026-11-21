@@ -25,20 +25,23 @@ export function Footer() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop, isWebglUnsupported } = webgl;
-
-      // Strip 3D di footer dekoratif: tanpa WebGL cukup diam.
-      if (isWebglUnsupported()) return;
+      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 1200;
       const height = container.clientHeight || 220;
 
-      const renderer = new THREE.WebGLRenderer({
-        antialias: !isSoftwareGl,
-        alpha: false,
-        powerPreference: 'high-performance',
-      });
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          antialias: !isSoftwareGl,
+          alpha: false,
+          powerPreference: 'high-performance',
+        });
+      } catch {
+        // Strip 3D footer gagal membuka konteks: konten footer tetap utuh.
+        return;
+      }
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);

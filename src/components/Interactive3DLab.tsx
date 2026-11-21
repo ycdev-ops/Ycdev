@@ -9,6 +9,7 @@ import {
 } from '../three/showcaseObjects';
 import {
   createWebglUtils,
+  requestWebglContext,
 } from '../three/webglUtils';
 import type { ProceduralTextureSet } from '../three/webglTypes';
 
@@ -32,7 +33,6 @@ export function Interactive3DLab({
   const [autoOrbit, setAutoOrbit] = useState(true);
   const [dockCollapsed, setDockCollapsed] = useState(false);
   const [webglBlocked, setWebglBlocked] = useState(false);
-  const [webglBlockedReason, setWebglBlockedReason] = useState('');
 
   const activeModelRef = useRef<ShowcaseModelId>(activeModel);
   const explodeRef = useRef<number>(explodePercent / 100);
@@ -64,7 +64,12 @@ export function Interactive3DLab({
     let cancelled = false;
     let cleanup: (() => void) | null = null;
 
-    loadThree().then(async (THREE) => {
+    // Empat komponen WebGL di halaman ini dulu membuat konteksnya berebutan
+    // serentak; di Android/software-GL anggaran konteksnya habis dan viewport
+    // yang kalah diam-diam mati. Sekarang diserialkan lewat antrean ini.
+    requestWebglContext(async () => {
+      if (cancelled) return;
+      const THREE = await loadThree();
       if (cancelled) return;
       const [{ OrbitControls }, { RoomEnvironment }] = await Promise.all([
         import('three/addons/controls/OrbitControls.js'),
@@ -80,28 +85,25 @@ export function Interactive3DLab({
         createProceduralTextures,
         createShowcaseMaterials,
         createStudioEnvironment,
-        isWebglUnsupported,
-        webglFallbackReason,
       } = webgl;
-
-      // WebGL praktis tidak tersedia (mis. WebGL2 tanpa OES_packed_depth_stencil):
-      // three.js melempar error saat membuat renderer, jadi beri tahu pengunjung
-      // alih-alih menyisakan viewport kosong selamanya.
-      if (isWebglUnsupported()) {
-        setWebglBlocked(true);
-        setWebglBlockedReason(webglFallbackReason());
-        return;
-      }
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 960;
       const height = container.clientHeight || 560;
 
-      const renderer = new THREE.WebGLRenderer({
-        antialias: !isSoftwareGl,
-        alpha: false,
-        powerPreference: 'high-performance',
-      });
+      // Renderer dibuat di dalam try/catch: hanya kegagalan nyata di sini yang
+      // mematikan viewport, bukan tebakan soal dukungan ekstensi.
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          antialias: !isSoftwareGl,
+          alpha: false,
+          powerPreference: 'high-performance',
+        });
+      } catch {
+        setWebglBlocked(true);
+        return;
+      }
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
@@ -286,6 +288,7 @@ export function Interactive3DLab({
     };
   }, []);
 
+
   useEffect(() => {
     sceneRefs.current.swapNow?.();
   }, [activeModel]);
@@ -332,7 +335,8 @@ export function Interactive3DLab({
                   Viewport 3D tidak dapat dibuka
                 </p>
                 <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                  {webglBlockedReason || 'Perangkat tidak mendukung WebGL.'}
+                  Peramban atau perangkat ini menolak membuka konteks WebGL untuk
+                  viewport 3D.
                 </p>
                 <p className="mt-3 text-[11px] leading-relaxed text-ink-400">
                   Spekifikasi perangkat tetap tersedia pada panel informasi dan

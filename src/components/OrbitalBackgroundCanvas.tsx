@@ -44,23 +44,20 @@ export function OrbitalBackgroundCanvas() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const {
-        detectSoftwareWebGL,
-        createPacedRenderLoop,
-        createProceduralTextures,
-        isWebglUnsupported,
-      } = webgl;
-
-      // Latar orbital bersifat dekoratif: bila WebGL tidak bisa dipakai, diam
-      // saja (gradien latar tetap ada) alih-alih mematikan komponen lain.
-      if (isWebglUnsupported()) return;
+      const { detectSoftwareWebGL, createPacedRenderLoop, createProceduralTextures } = webgl;
 
       const isSoftwareGl = detectSoftwareWebGL();
-      const renderer = new THREE.WebGLRenderer({
-        antialias: !isSoftwareGl,
-        alpha: false,
-        powerPreference: 'high-performance',
-      });
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          antialias: !isSoftwareGl,
+          alpha: false,
+          powerPreference: 'high-performance',
+        });
+      } catch {
+        // Latar orbital gagal membuka konteks: latar gradien statis tetap ada.
+        return;
+      }
 
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -186,6 +183,12 @@ export function OrbitalBackgroundCanvas() {
         ref={mountRef}
         data-testid="orbital-background-canvas"
         className="h-full w-full"
+      />
+      {/* Latar statis: selalu ada, dengan atau tanpa WebGL. */}
+      <div
+        aria-hidden="true"
+        data-testid="orbital-static-backdrop"
+        className="absolute inset-0 bg-gradient-to-b from-[#05070A] via-[#09111E] to-[#05070A]"
       />
       {contextLost && (
         <div className="absolute inset-0 bg-gradient-to-b from-[#05070A] via-[#09111E] to-[#05070A]" />
