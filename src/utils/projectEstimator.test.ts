@@ -10,7 +10,7 @@ import {
 test('calculateProjectEstimate returns invalid state when no disciplines selected', () => {
   const result = calculateProjectEstimate({
     disciplines: [],
-    scale: 'mvp',
+    scale: 'pilot',
     urgency: 'standard',
   });
 

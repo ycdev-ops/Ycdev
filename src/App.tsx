@@ -27,7 +27,7 @@ export default function App() {
     'iot',
     'fullstack',
   ]);
-  const [scale, setScale] = useState<ProjectScale>('production');
+  const [scale, setScale] = useState<ProjectScale>('pilot');
   const [urgency, setUrgency] = useState<TimelineUrgency>('standard');
   const [attachedScope, setAttachedScope] = useState<string | null>(null);
   const [active3DModel, setActive3DModel] = useState<ShowcaseModelId>('iot-gateway');

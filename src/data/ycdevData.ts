@@ -1,4 +1,16 @@
-export type DisciplineId = 'iot' | 'fullstack' | 'cybersecurity' | 'software';
+/**
+ * Delapan pilar layanan studio. Empat yang pertama juga dipakai sebagai
+ * domain pengelompok studi kasus, jadi nilai lama tetap valid.
+ */
+export type DisciplineId =
+  | 'iot'
+  | 'fullstack'
+  | 'cybersecurity'
+  | 'software'
+  | 'cold-chain-semarang'
+  | 'fintech-zero-trust-audit'
+  | 'erp-manufaktur-fullstack'
+  | 'high-throughput-telemetry-engine';
 
 export type DomainFilter = 'all' | DisciplineId;
 
