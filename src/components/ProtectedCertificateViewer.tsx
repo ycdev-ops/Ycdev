@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Eye, ShieldAlert, ZoomIn, ZoomOut } from 'lucide-react';
+import { assetUrl } from '../utils/siteAssets';
 
 export interface OfficialCertificate {
   id: string;
@@ -93,7 +94,9 @@ export function ProtectedCertificateViewer({
         setStatus('ready');
       };
       img.onerror = () => setStatus('blocked');
-      img.src = cert.imageFile;
+      // Lewati assetUrl supaya "/dokumen-asli/..." ikut basis sub-path
+      // (mis. /Ycdev/) — path absolut mentah akan jatuh ke domain root.
+      img.src = assetUrl(cert.imageFile);
     },
     [cert.imageFile, watermark]
   );
