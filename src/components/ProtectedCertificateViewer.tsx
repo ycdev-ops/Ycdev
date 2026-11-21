@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Eye, ShieldAlert, ZoomIn, ZoomOut } from 'lucide-react';
+import { useState } from 'react';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 
 export interface OfficialCertificate {
   id: string;
@@ -15,60 +15,25 @@ export interface OfficialCertificate {
    * tunggal dokumen yang diakui situs ini.
    */
   sourceFile: string;
-  /** Catatan kejujuran: tampilkan bila dokumen tidak punya nomor/verifikasi. */
-  note?: string;
 }
 
 /**
- * Penampil dokumen resmi.
+ * Penampil dokumen sertifikat resmi — tampilan polos.
  *
- * Catatan teknis penting:
- * - Dokumen dimuat sebagai <img> biasa (tanpa crossOrigin/canvas). Canvas +
- *   crossOrigin='anonymous' gagal di hosting statis GitHub Pages dan memicu
- *   status "Dokumen tidak dapat dimuat" — itu bug yang sudah diperbaiki.
- * - URL memakai path RELATIF (mis. "dokumen-asli/xxx.png"), bukan "/dokumen-asli/…".
- *   Path absolut akan jatuh ke domain root dan 404 di sub-path /Ycdev/.
- * - Gambar diberi decoding="async" tapi TIDAK lazy, supaya kelima dokumen
- *   langsung dimuat saat section tampil.
+ * Dokumen ditampilkan apa adanya sebagai <img>. Tidak ada lapisan proteksi
+ * (tanpa watermark, tanpa penghambat klik kanan/drag/salin) dan tanpa overlay
+ * status, supaya berkas asli terbaca utuh.
  */
 export function ProtectedCertificateViewer({
   cert,
-  watermark,
 }: {
   cert: OfficialCertificate;
-  watermark: string;
+  watermark?: string;
 }) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
   const [zoom, setZoom] = useState(1);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'blocked'>('loading');
 
   // Path relatif terhadap halaman — benar di domain root maupun /Ycdev/.
   const src = cert.imageFile.replace(/^\/+/, '');
-
-  useEffect(() => {
-    setStatus('loading');
-  }, [src]);
-
-  useEffect(() => {
-    const node = wrapRef.current;
-    if (!node) return;
-
-    const onContext = (e: MouseEvent) => e.preventDefault();
-    const onCopy = (e: ClipboardEvent) => e.preventDefault();
-    const onDrag = (e: DragEvent) => e.preventDefault();
-
-    node.addEventListener('contextmenu', onContext);
-    node.addEventListener('copy', onCopy);
-    node.addEventListener('cut', onCopy);
-    node.addEventListener('dragstart', onDrag);
-
-    return () => {
-      node.removeEventListener('contextmenu', onContext);
-      node.removeEventListener('copy', onCopy);
-      node.removeEventListener('cut', onCopy);
-      node.removeEventListener('dragstart', onDrag);
-    };
-  }, []);
 
   return (
     <figure className="overflow-hidden rounded-xl border border-white/15 bg-[#0B1018]">
@@ -101,53 +66,15 @@ export function ProtectedCertificateViewer({
         </div>
       </div>
 
-      <div
-        ref={wrapRef}
-        data-testid={`cert-viewer-${cert.id}`}
-        className="relative select-none overflow-hidden bg-[#05070A]"
-        style={{ cursor: 'default' }}
-      >
-        {/* Watermark diagonal — CSS murni, tidak ikut memblokir pemuatan gambar. */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(-22deg, transparent 0 90px, rgba(15,23,42,0.10) 90px 91px)',
-          }}
-        />
-
+      <div className="bg-[#05070A]">
         <img
           src={src}
           alt={cert.title}
           draggable={false}
           referrerPolicy="no-referrer"
-          onLoad={() => setStatus('ready')}
-          onError={() => setStatus('blocked')}
           className="block h-auto w-full"
           style={{ zoom }}
         />
-
-        {status === 'loading' ? (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-[#05070A]/80 text-xs text-ink-400">
-            <Eye className="h-4 w-4" aria-hidden="true" />
-            Menyiapkan dokumen…
-          </div>
-        ) : null}
-
-        {status === 'blocked' ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#05070A]/90 p-6 text-center">
-            <ShieldAlert className="h-6 w-6 text-amber-400" aria-hidden="true" />
-            <p className="text-sm font-medium text-white">Dokumen tidak dapat dimuat</p>
-            <p className="text-xs text-ink-400">
-              Periksa koneksi Anda lalu muat ulang halaman.
-            </p>
-          </div>
-        ) : null}
-
-        <div className="pointer-events-none absolute right-2 bottom-2 rounded bg-black/55 px-2 py-1 font-mono text-[9px] tracking-wide text-slate-300">
-          DOKUMEN RESMI · DILINDUNGI
-        </div>
       </div>
 
       <div className="border-t border-white/10 bg-[#0D1219] px-4 py-3">
@@ -171,13 +98,6 @@ export function ProtectedCertificateViewer({
             </div>
           ) : null}
         </dl>
-
-        {cert.note ? (
-          <p className="mt-2.5 flex items-start gap-1.5 text-[10px] leading-relaxed text-ink-500">
-            <ShieldAlert className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-            <span>{cert.note}</span>
-          </p>
-        ) : null}
       </div>
     </figure>
   );

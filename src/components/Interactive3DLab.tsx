@@ -31,6 +31,8 @@ export function Interactive3DLab({
   const [explodePercent, setExplodePercent] = useState(20);
   const [autoOrbit, setAutoOrbit] = useState(true);
   const [dockCollapsed, setDockCollapsed] = useState(false);
+  const [webglBlocked, setWebglBlocked] = useState(false);
+  const [webglBlockedReason, setWebglBlockedReason] = useState('');
 
   const activeModelRef = useRef<ShowcaseModelId>(activeModel);
   const explodeRef = useRef<number>(explodePercent / 100);
@@ -72,7 +74,24 @@ export function Interactive3DLab({
 
       const webgl = createWebglUtils(THREE);
       const showcase = createShowcaseObjects(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop, createProceduralTextures } = webgl;
+      const {
+        detectSoftwareWebGL,
+        createPacedRenderLoop,
+        createProceduralTextures,
+        createShowcaseMaterials,
+        createStudioEnvironment,
+        isWebglUnsupported,
+        webglFallbackReason,
+      } = webgl;
+
+      // WebGL praktis tidak tersedia (mis. WebGL2 tanpa OES_packed_depth_stencil):
+      // three.js melempar error saat membuat renderer, jadi beri tahu pengunjung
+      // alih-alih menyisakan viewport kosong selamanya.
+      if (isWebglUnsupported()) {
+        setWebglBlocked(true);
+        setWebglBlockedReason(webglFallbackReason());
+        return;
+      }
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 960;
@@ -147,6 +166,9 @@ export function Interactive3DLab({
       const textures = createProceduralTextures(
         Math.min(4, renderer.capabilities.getMaxAnisotropy())
       );
+      const materials = createShowcaseMaterials(textures);
+      const studio = createStudioEnvironment(THREE);
+      scene.add(studio.group);
 
       const shadowPlane = new THREE.Mesh(
         new THREE.PlaneGeometry(3.8, 3.8),
@@ -178,7 +200,7 @@ export function Interactive3DLab({
           });
         }
 
-        const nextGroup = showcase.buildShowcaseModel(targetId, textures);
+        const nextGroup = showcase.buildShowcaseModel(targetId, textures, materials);
         showcase.updateShowcaseExplodeAndSpin(nextGroup, explodeRef.current, 1.0);
         scene.add(nextGroup);
         sceneRefs.current.modelGroup = nextGroup;
@@ -216,8 +238,9 @@ export function Interactive3DLab({
 
       let lastHandledReset = 0;
 
-      const loopHandle = createPacedRenderLoop(renderer, isSoftwareGl, (delta) => {
+      const loopHandle = createPacedRenderLoop(renderer, isSoftwareGl, (delta, elapsed) => {
         swapModelIfNeeded();
+        studio.update(elapsed);
 
         if (resetSignalRef.current !== lastHandledReset) {
           lastHandledReset = resetSignalRef.current;
@@ -248,6 +271,7 @@ export function Interactive3DLab({
         window.removeEventListener('resize', handleResize);
         controls.dispose();
         textures.dispose();
+        materials.dispose();
         envTarget.dispose();
         renderer.dispose();
         if (canvas.parentNode === container) {
@@ -297,8 +321,26 @@ export function Interactive3DLab({
             ref={mountRef}
             data-testid="interactive-3d-viewport"
             data-active-model={activeModel}
+            data-webgl-state={webglBlocked ? 'fallback' : 'live'}
             className="h-full w-full cursor-grab active:cursor-grabbing"
           />
+
+          {webglBlocked && (
+            <div className="absolute inset-0 flex items-center justify-center p-6">
+              <div className="max-w-sm rounded-lg border border-white/15 bg-[#090D14]/95 p-5 text-center">
+                <p className="font-display text-base font-bold text-white">
+                  Viewport 3D tidak dapat dibuka
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  {webglBlockedReason || 'Perangkat tidak mendukung WebGL.'}
+                </p>
+                <p className="mt-3 text-[11px] leading-relaxed text-ink-400">
+                  Spekifikasi perangkat tetap tersedia pada panel informasi dan
+                  daftar komponen di bawah.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Minimal Top-Left Spec Badge (never covering center model, no backdrop-blur) */}
           <div className="pointer-events-none absolute top-4 left-4 max-w-sm rounded-lg border border-white/15 bg-[#090D14]/90 p-4">

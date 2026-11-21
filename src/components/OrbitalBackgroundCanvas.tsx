@@ -44,7 +44,16 @@ export function OrbitalBackgroundCanvas() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop, createProceduralTextures } = webgl;
+      const {
+        detectSoftwareWebGL,
+        createPacedRenderLoop,
+        createProceduralTextures,
+        isWebglUnsupported,
+      } = webgl;
+
+      // Latar orbital bersifat dekoratif: bila WebGL tidak bisa dipakai, diam
+      // saja (gradien latar tetap ada) alih-alih mematikan komponen lain.
+      if (isWebglUnsupported()) return;
 
       const isSoftwareGl = detectSoftwareWebGL();
       const renderer = new THREE.WebGLRenderer({

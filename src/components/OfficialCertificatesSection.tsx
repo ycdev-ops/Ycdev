@@ -1,7 +1,6 @@
-import { Award, ShieldCheck } from 'lucide-react';
+import { Award } from 'lucide-react';
 import {
   CERTIFICATE_SOURCE_FILES,
-  CERTIFICATE_WATERMARK,
   OFFICIAL_CERTIFICATES,
 } from '../data/officialCertificates';
 import type { OfficialCertificate } from './ProtectedCertificateViewer';
@@ -10,14 +9,10 @@ import { ProtectedCertificateViewer } from './ProtectedCertificateViewer';
 /**
  * Dokumen sertifikat resmi, tampil di bawah Profil Pendiri.
  *
- * Dokumen ditampilkan apa adanya di dalam permukaan berlapis watermark.
- * Penghambat interaksi menekan salinan santai; lihat catatan teknis di
- * ProtectedCertificateViewer soal batas perlindungan.
+ * Dokumen ditampilkan apa adanya; daftar putih CERTIFICATE_SOURCE_FILES
+ * menjaga hanya berkas dari `src/assets/images/` yang tampil.
  */
 export function OfficialCertificatesSection() {
-  // Daftar putih: hanya dokumen yang `sourceFile`-nya terdaftar di
-  // CERTIFICATE_SOURCE_FILES yang boleh tampil. Ini menjaga klaim
-  // "sumber tunggal src/assets/images/" tetap benar saat data bertambah.
   const allowed = new Set(CERTIFICATE_SOURCE_FILES);
   const certificates = OFFICIAL_CERTIFICATES.filter((cert) =>
     allowed.has(cert.sourceFile)
@@ -39,18 +34,6 @@ export function OfficialCertificatesSection() {
               Sertifikat & Kredensial Resmi
             </h2>
           </div>
-
-          <div className="flex items-start gap-2.5 rounded-lg border border-white/10 bg-[#0A0E14] px-3.5 py-3 text-[11px] leading-relaxed text-ink-400 lg:max-w-sm">
-            <ShieldCheck
-              className="mt-0.5 h-4 w-4 shrink-0 text-sky-400"
-              aria-hidden="true"
-            />
-            <span>
-              Watermark dan klik kanan dinonaktifkan; tangkapan layar tetap mungkin
-              dilakukan oleh perangkat — mohon tidak menyebarluaskan dokumen ini
-              tanpa izin YcDev.
-            </span>
-          </div>
         </div>
 
         <div
@@ -59,16 +42,10 @@ export function OfficialCertificatesSection() {
         >
           {certificates.map((cert) => {
             const item: OfficialCertificate = cert;
-            return (
-              <ProtectedCertificateViewer
-                key={item.id}
-                cert={item}
-                watermark={CERTIFICATE_WATERMARK}
-              />
-            );
+            return <ProtectedCertificateViewer key={item.id} cert={item} />;
           })}
-
         </div>
+
         <p className="mt-8 border-t border-white/10 pt-5 text-center font-mono text-[10px] tracking-[0.16em] text-ink-500 uppercase">
           © {new Date().getFullYear()} YcDev · Seluruh dokumen milik Yuan Nugroho / YcDev Semarang Barat
         </p>

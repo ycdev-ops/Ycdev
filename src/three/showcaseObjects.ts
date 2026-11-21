@@ -1,5 +1,5 @@
 import type * as THREE from 'three';
-import type { ProceduralTextureSet } from './webglTypes';
+import type { ProceduralTextureSet, ShowcaseMaterials } from './webglTypes';
 import { computeExplodedOffset } from '../utils/telemetrySimulation';
 
 
@@ -92,46 +92,45 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
 
   function buildShowcaseModel(
     id: ShowcaseModelId,
-    textures: ProceduralTextureSet
+    textures: ProceduralTextureSet,
+    materials: ShowcaseMaterials
   ): THREE.Group {
-  const root = new THREE.Group();
+    const root = new THREE.Group();
 
-  const matteChassis = new THREE.MeshStandardMaterial({
-    color: 0x1b222d,
-    metalness: 0.72,
-    roughness: 0.58,
-    bumpMap: textures.brushedBump,
-    bumpScale: 0.015,
-  });
+    const matteChassis = materials.chassis;
+    const brushedSteel = materials.steel;
+    const darkSteel = materials.darkSteel;
+    const rubber = materials.rubber;
+    const glass = materials.glass;
+    const carbon = materials.carbon;
+    const cobaltAccent = materials.accent;
+    const copperMat = materials.copper;
+    const pcbMat = materials.pcb;
+    const ledGreen = materials.ledGreen;
+    const ledAmber = materials.ledAmber;
 
-  const brushedSteel = new THREE.MeshStandardMaterial({
-    color: 0xcbd5e1,
-    metalness: 0.92,
-    roughness: 0.22,
-    bumpMap: textures.brushedBump,
-    bumpScale: 0.01,
-  });
+    /** Sekrup kecil (cylinder + slot) — detail yang membuat enklosur terasa nyata. */
+    const screw = (x: number, y: number, z: number, r = 0.028) => {
+      const g = new THREE.Group();
+      const head = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.014, 16), darkSteel);
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(r * 1.4, 0.016, r * 0.28), rubber);
+      slot.position.y = 0.002;
+      g.add(head, slot);
+      g.position.set(x, y, z);
+      return g;
+    };
 
-  const cobaltAccent = new THREE.MeshStandardMaterial({
-    color: 0x0ea5e9,
-    emissive: 0x0284c7,
-    emissiveIntensity: 0.9,
-    roughness: 0.2,
-    metalness: 0.4,
-  });
-
-  const copperMat = new THREE.MeshStandardMaterial({
-    color: 0xd97706,
-    metalness: 0.9,
-    roughness: 0.2,
-  });
-
-  const pcbMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    map: textures.pcbAlbedo,
-    roughness: 0.45,
-    metalness: 0.25,
-  });
+    /** Deretan LED status menyala. */
+    const ledStrip = (count: number, color: 'green' | 'amber', spread: number, y: number, z: number) => {
+      const g = new THREE.Group();
+      const mat = color === 'green' ? ledGreen : ledAmber;
+      for (let i = 0; i < count; i += 1) {
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.018, 10, 10), mat);
+        dot.position.set(-spread / 2 + (i * spread) / (count - 1), y, z);
+        g.add(dot);
+      }
+      return g;
+    };
 
   if (id === 'iot-gateway') {
     // 1. Base enclosure body (ExtrudeGeometry with bevel)
@@ -218,6 +217,17 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     m12.position.set(0.62, 0.34, 0.8);
     tagExplodePart(m12, [0, 0, 0.55]);
     root.add(m12);
+
+    // 9. Sekrup sudut enklosur + deretan LED status
+    [
+      [-1.02, 0.62, -0.66],
+      [1.02, 0.62, -0.66],
+      [-1.02, 0.62, 0.66],
+      [1.02, 0.62, 0.66],
+    ].forEach(([sx, sy, sz]) => root.add(screw(sx, sy, sz)));
+    const status = ledStrip(4, 'green', 0.5, 0.63, 0.62);
+    tagExplodePart(status, [0, 0.8, 0.3]);
+    root.add(status);
   } else if (id === 'marine-gateway') {
     // 1. Marine IP67 Cast-Alloy Bottom Housing with Mounting Flanges
     const hullBase = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.38, 1.6), matteChassis);
@@ -281,6 +291,20 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     gnssDome.position.set(0.76, 0.82, -0.42);
     tagExplodePart(gnssDome, [0.35, 1.1, -0.25]);
     root.add(gnssDome);
+
+    // 7. Karet kaki anti-slip + sekrup flange + LED navigasi
+    [-1.26, 1.26].forEach((fx) => {
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 1.9), rubber);
+      foot.position.set(fx, 0.055, 0);
+      tagExplodePart(foot, [fx > 0 ? 0.55 : -0.55, -0.42, 0]);
+      root.add(foot);
+    });
+    [-1.26, -0.6, 0.6, 1.26].forEach((fx) =>
+      [-0.82, 0.82].forEach((fz) => root.add(screw(fx, 0.145, fz)))
+    );
+    const nav = ledStrip(3, 'amber', 0.4, 0.62, 0.72);
+    tagExplodePart(nav, [0, 0.9, 0.4]);
+    root.add(nav);
   } else if (id === 'hybrid-satcom') {
     // 1. Marine Stainless Deck Pedestal Base
     const pedestal = new THREE.Mesh(
@@ -347,6 +371,21 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     radome.position.set(0, 0.38, 0);
     tagExplodePart(radome, [0, 1.15, 0]);
     root.add(radome);
+
+    // 7. Kaca jendela radome (dielektrik) + LED tautan + sekrup pedestal
+    const windowPane = new THREE.Mesh(new THREE.CircleGeometry(0.24, 24), glass);
+    windowPane.rotation.x = -Math.PI / 2;
+    windowPane.position.set(0, 1.31, 0);
+    tagExplodePart(windowPane, [0, 1.5, 0]);
+    root.add(windowPane);
+
+    const link = ledStrip(4, 'green', 0.6, 0.62, 0.52);
+    tagExplodePart(link, [0, 0.35, 0.5]);
+    root.add(link);
+    for (let i = 0; i < 8; i += 1) {
+      const a = (i / 8) * Math.PI * 2;
+      root.add(screw(Math.cos(a) * 0.8, 0.4, Math.sin(a) * 0.8, 0.024));
+    }
   } else if (id === 'cyber-appliance') {
     // 1. 2U Rackmount Steel Chassis
     const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.56, 1.45), matteChassis);
@@ -407,12 +446,35 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     psu.position.set(0.75, 0.34, -0.78);
     tagExplodePart(psu, [0, 0, -0.65]);
     root.add(psu);
+
+    // 9. LED port SFP+ + kipas ventilasi belakang + sekrup rack
+    const portLeds = ledStrip(8, 'green', 1.0, 0.5, 0.79);
+    tagExplodePart(portLeds, [0.25, 0.2, 0.7]);
+    root.add(portLeds);
+
+    const fan = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.05, 24), darkSteel);
+    fan.rotation.x = Math.PI / 2;
+    fan.position.set(-0.85, 0.34, -0.74);
+    tagExplodePart(fan, [0, 0, -0.7]);
+    root.add(fan);
+
+    [-1.2, 1.2].forEach((sx) => root.add(screw(sx, 0.6, 0.71, 0.03)));
   } else if (id === 'telemetry-drone') {
     // 1. Carbon-fiber fuselage
-    const hull = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.22, 1.15), matteChassis);
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.22, 1.15), carbon);
     hull.position.set(0, 0.56, 0);
     tagExplodePart(hull, [0, 0.15, 0]);
     root.add(hull);
+
+    // Lampu navigasi sayap (merah/hijau) + strip LED ekor
+    const navL = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 10), ledAmber);
+    navL.position.set(-1.12, 0.62, 1.12);
+    tagExplodePart(navL, [-0.8, 0.35, 0.8]);
+    root.add(navL);
+    const navR = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 10), ledGreen);
+    navR.position.set(1.12, 0.62, 1.12);
+    tagExplodePart(navR, [0.8, 0.35, 0.8]);
+    root.add(navR);
 
     // 2. Top aerodynamic canopy & RTK-GPS ceramic dome
     const canopy = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.42, 0.16, 8), brushedSteel);
@@ -469,6 +531,17 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     rightSkid.position.set(0.42, 0.12, 0);
     tagExplodePart(rightSkid, [0.35, -0.3, 0]);
     root.add(rightSkid);
+
+    // 6. Busur serat karbon di sekujur badan + kunci baterai
+    const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.1, 12), carbon);
+    spine.rotation.x = Math.PI / 2;
+    spine.position.set(0, 0.7, 0);
+    tagExplodePart(spine, [0, 0.7, 0]);
+    root.add(spine);
+    const batteryLatch = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.14), rubber);
+    batteryLatch.position.set(0, 0.68, -0.42);
+    tagExplodePart(batteryLatch, [0, 0.5, -0.5]);
+    root.add(batteryLatch);
   } else {
     // 'server-blade': Liquid-Cooled Compute Blade
     // 1. Sled baseplate
@@ -521,6 +594,18 @@ export function createShowcaseObjects(THREE: typeof import('three')) {
     busbar.position.set(0, 0.3, -1.06);
     tagExplodePart(busbar, [0, 0.3, -0.55]);
     root.add(busbar);
+
+    // 7. LED NVMe + kipas pendingin + sekrup sled
+    const nvmeLeds = ledStrip(4, 'green', 1.0, 0.37, 0.6);
+    tagExplodePart(nvmeLeds, [0, 0.15, 0.7]);
+    root.add(nvmeLeds);
+
+    const fan = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.06, 24), darkSteel);
+    fan.position.set(-0.5, 0.32, -0.85);
+    tagExplodePart(fan, [0, 0.4, -0.6]);
+    root.add(fan);
+
+    [-0.85, 0.85].forEach((sx) => root.add(screw(sx, 0.2, 1.1, 0.026)));
   }
 
   return root;

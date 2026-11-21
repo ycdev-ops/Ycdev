@@ -8,6 +8,7 @@ import {
   Lock,
   MapPin,
   Menu,
+  Scan,
   Users,
   X,
 } from 'lucide-react';
@@ -30,10 +31,48 @@ const NAV_LINKS = [
   { href: '#lokasi-3d', label: 'Peta 3D', icon: MapPin },
 ] as const;
 
+/** Indeks section yang dilacak scroll-spy (sama dengan NAV_LINKS). */
+const SPY_IDS = NAV_LINKS.map((l) => l.href.slice(1));
+
 export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
+  const [scrolled, setScrolled] = useState(false);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll-spy: tandai link aktif + ukur posisi indikator mengikuti gulir.
+  useEffect(() => {
+    const measure = () => {
+      setScrolled(window.scrollY > 12);
+      const probe = window.scrollY + window.innerHeight * 0.32;
+      let current = '';
+      for (const id of SPY_IDS) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.offsetTop <= probe) current = id;
+      }
+      setActiveSection(current);
+
+      const rail = railRef.current;
+      if (!rail) return;
+      const target = rail.querySelector<HTMLElement>(
+        `[data-spy-link="${current}"]`
+      );
+      setIndicator(
+        target ? { x: target.offsetLeft - 4, w: target.offsetWidth } : null
+      );
+    };
+    measure();
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
 
   useEffect(() => {
     const handleOutside = (e: MouseEvent) => {
@@ -44,6 +83,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setProductMenuOpen(false);
+        setMobileOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutside);
@@ -73,25 +113,42 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-40 px-3 pt-2.5 sm:px-6">
-      {/* Floating Futuristic Command Dock Shell */}
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl border border-sky-400/25 bg-[#060A12]/95 px-4 py-2.5 shadow-[0_14px_40px_-12px_rgba(14,165,233,0.32)] lg:px-5">
-        {/* Top Horizon Glow Accent */}
+      {/* Floating Command Dock */}
+      <div
+        className={`relative mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-2xl border px-4 py-2.5 backdrop-blur-xl transition-all duration-300 lg:px-5 ${
+          scrolled
+            ? 'border-sky-400/40 bg-[#060A12]/95 shadow-[0_14px_40px_-12px_rgba(14,165,233,0.38)]'
+            : 'border-sky-400/20 bg-[#060A12]/80 shadow-[0_8px_28px_-14px_rgba(14,165,233,0.24)]'
+        }`}
+      >
+        {/* Garis horison atas */}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/80 to-transparent"
         />
+        {/* Cahaya sudut */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute -top-px left-6 h-px w-16 bg-gradient-to-r from-transparent via-sky-300/90 to-transparent transition-opacity duration-500 ${
+            scrolled ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
 
-        {/* Zone 1: Brand Pod */}
+        {/* Brand */}
         <a
           href="#top"
-          className="group inline-flex items-center gap-3 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400"
+          className="group relative inline-flex items-center gap-3 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400"
         >
-          <span className="relative inline-flex rounded-full p-0.5 ring-1 ring-sky-400/50 transition-transform duration-150 group-hover:scale-105">
+          <span className="relative inline-flex rounded-full p-0.5 ring-1 ring-sky-400/50 transition-all duration-300 group-hover:ring-sky-300 group-hover:shadow-[0_0_18px_-2px_rgba(56,189,248,0.6)]">
             <img
               src={assetUrl(STUDIO_PROFILE.logoImage)}
               alt="Logo YcDev"
               referrerPolicy="no-referrer"
               className="h-9 w-9 rounded-full object-cover"
+            />
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 rounded-full border border-sky-300/0 transition-all duration-300 group-hover:border-sky-300/40"
             />
           </span>
           <span className="flex flex-col leading-none">
@@ -104,20 +161,32 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
           </span>
         </a>
 
-        {/* Zone 2: Segmented Command Rail (Desktop) */}
+        {/* Command rail desktop */}
         <nav
           aria-label="Navigasi utama"
-          className="hidden lg:flex items-center gap-1 rounded-xl border border-white/10 bg-[#0B121F] p-1"
+          ref={railRef}
+          className="relative hidden items-center gap-1 rounded-xl border border-white/10 bg-[#0B121F] p-1 lg:flex"
         >
+          {/* Indikator aktif melayang */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-1 rounded-lg bg-gradient-to-r from-sky-500/25 to-sky-400/5 transition-all duration-300"
+            style={{
+              width: indicator ? `${indicator.w}px` : '0px',
+              transform: `translateX(${indicator ? indicator.x : 0}px)`,
+              opacity: indicator ? 1 : 0,
+            }}
+          />
+
           <div ref={dropdownRef} className="relative">
             <button
               type="button"
               aria-expanded={productMenuOpen}
               aria-haspopup="true"
               onClick={() => setProductMenuOpen((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
+              className={`relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-200 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
                 productMenuOpen
-                  ? 'bg-[#1A73E8] text-white'
+                  ? 'bg-[#1A73E8] text-white shadow-[0_0_18px_-4px_rgba(26,115,232,0.7)]'
                   : 'text-slate-100 hover:bg-sky-500/15 hover:text-white'
               }`}
             >
@@ -127,7 +196,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
                 12
               </span>
               <ChevronDown
-                className={`h-3.5 w-3.5 text-sky-300 transition-transform duration-150 ${
+                className={`h-3.5 w-3.5 text-sky-300 transition-transform duration-200 ${
                   productMenuOpen ? 'rotate-180' : ''
                 }`}
                 aria-hidden="true"
@@ -220,25 +289,43 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
 
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
+            const isActive = activeSection === link.href.slice(1);
             return (
               <a
                 key={link.href}
                 href={link.href}
-                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors duration-150 hover:bg-sky-500/15 hover:text-white whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                data-spy-link={link.href.slice(1)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
+                  isActive ? 'text-white' : 'text-slate-300 hover:text-white'
+                }`}
               >
-                <Icon className="h-3.5 w-3.5 text-sky-400/80" aria-hidden="true" />
+                <Icon
+                  className={`h-3.5 w-3.5 transition-all duration-200 ${
+                    isActive
+                      ? 'text-sky-300 drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]'
+                      : 'text-sky-400/70'
+                  }`}
+                  aria-hidden="true"
+                />
                 <span>{link.label}</span>
+                <span
+                  aria-hidden="true"
+                  className={`absolute inset-x-3 -bottom-px h-px bg-gradient-to-r from-transparent via-sky-300/90 to-transparent transition-all duration-300 ${
+                    isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-50'
+                  }`}
+                />
               </a>
             );
           })}
         </nav>
 
-        {/* Zone 3: Action Pod — Form Consultation + Eye-Catching Official WhatsApp Hubungi Kami */}
+        {/* Action pod */}
         <div className="flex items-center gap-2.5 shrink-0">
           <button
             type="button"
             onClick={handleCtaClick}
-            className="hidden xl:inline-flex items-center justify-center rounded-xl border border-white/15 bg-[#0D1422] px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-sky-400/50 hover:text-white whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="hidden xl:inline-flex items-center justify-center rounded-xl border border-white/15 bg-[#0D1422] px-3.5 py-2 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-sky-400/50 hover:text-white whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
           >
             Brief Proyek
           </button>
@@ -247,7 +334,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
             href={STUDIO_PROFILE.whatsappHref}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-emerald-400/50 bg-gradient-to-r from-[#0F7641] via-[#15803D] to-[#16A34A] px-3.5 py-2 text-xs font-bold text-white shadow-[0_0_24px_-4px_rgba(37,211,102,0.5)] transition-all duration-150 hover:brightness-110 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+            className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-emerald-400/50 bg-gradient-to-r from-[#0F7641] via-[#15803D] to-[#16A34A] px-3.5 py-2 text-xs font-bold text-white shadow-[0_0_24px_-4px_rgba(37,211,102,0.5)] transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_32px_-4px_rgba(37,211,102,0.75)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
           >
             <WhatsAppIcon className="h-4 w-4 shrink-0" />
             <span>Hubungi Kami</span>
@@ -259,45 +346,81 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
             aria-label={mobileOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
-            className="inline-flex lg:hidden h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-[#0B121F] text-slate-200 transition-colors hover:bg-white/10 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="relative inline-flex lg:hidden h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-[#0B121F] text-slate-200 transition-colors hover:bg-white/10 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <Scan
+              className={`absolute h-4 w-4 text-sky-400 transition-all duration-300 ${
+                scrolled ? 'opacity-60' : 'opacity-0'
+              }`}
+              aria-hidden="true"
+            />
+            <span className="relative inline-flex h-5 w-5 items-center justify-center">
+              <Menu
+                className={`absolute h-5 w-5 transition-all duration-300 ${
+                  mobileOpen ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'
+                }`}
+              />
+              <X
+                className={`absolute h-5 w-5 transition-all duration-300 ${
+                  mobileOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'
+                }`}
+              />
+            </span>
           </button>
         </div>
       </div>
 
-      {/* Mobile Command Drawer */}
-      {mobileOpen && (
+      {/* Mobile drawer */}
+      <div
+        id="mobile-navigation"
+        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out lg:hidden ${
+          mobileOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
         <nav
-          id="mobile-navigation"
           aria-label="Navigasi seluler"
-          className="mx-auto mt-2 max-w-7xl rounded-2xl border border-sky-400/20 bg-[#070B13] px-5 py-4 shadow-2xl lg:hidden"
+          className="min-h-0"
         >
-          <div className="flex flex-col gap-2">
-            <a
-              href="#solusi-maritim"
-              onClick={handleLinkClick}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-sky-300 hover:bg-white/5"
-            >
-              <Boxes className="h-4 w-4" aria-hidden="true" />
-              Produk & Solusi Maritim (12)
-            </a>
-            {NAV_LINKS.map((link) => {
-              const Icon = link.icon;
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleLinkClick}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white"
-                >
-                  <Icon className="h-4 w-4 text-sky-400" aria-hidden="true" />
-                  {link.label}
-                </a>
-              );
-            })}
+          <div className="mx-auto mt-2 max-w-7xl rounded-2xl border border-sky-400/20 bg-[#070B13] px-5 py-4 shadow-2xl">
+            <div className="flex flex-col gap-1">
+              <a
+                href="#solusi-maritim"
+                onClick={handleLinkClick}
+                className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-sky-300 hover:bg-white/5"
+              >
+                <Boxes className="h-4 w-4" aria-hidden="true" />
+                Produk & Solusi Maritim (12)
+              </a>
+              {NAV_LINKS.map((link) => {
+                const Icon = link.icon;
+                const isActive = activeSection === link.href.slice(1);
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={handleLinkClick}
+                    aria-current={isActive ? 'true' : undefined}
+                    className={`relative flex items-center gap-2 overflow-hidden rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive ? 'text-white' : 'text-slate-200 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    {isActive ? (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.9)]"
+                      />
+                    ) : null}
+                    <Icon
+                      className={`h-4 w-4 ${isActive ? 'text-sky-300' : 'text-sky-400/70'}`}
+                      aria-hidden="true"
+                    />
+                    {link.label}
+                  </a>
+                );
+              })}
+            </div>
 
-            <div className="mt-2 grid grid-cols-1 gap-2.5 border-t border-white/10 pt-3 sm:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-2.5 border-t border-white/10 pt-3 sm:grid-cols-2">
               <button
                 type="button"
                 onClick={handleCtaClick}
@@ -318,7 +441,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
             </div>
           </div>
         </nav>
-      )}
+      </div>
     </header>
   );
 }

@@ -28,6 +28,8 @@ export function Semarang3DMapCanvas() {
   const [focus, setFocus] = useState<SemarangMapFocus>('hq');
   const [mapStyle, setMapStyle] = useState<SemarangMapStyle>('satellite');
   const [tiltMode, setTiltMode] = useState<SemarangMapTilt>('3d');
+  const [mapWebglBlocked, setMapWebglBlocked] = useState(false);
+  const [mapWebglBlockedReason, setMapWebglBlockedReason] = useState('');
 
   const controlStateRef = useRef<{
     focus: SemarangMapFocus;
@@ -73,7 +75,14 @@ export function Semarang3DMapCanvas() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
+      const { detectSoftwareWebGL, createPacedRenderLoop, isWebglUnsupported, webglFallbackReason } =
+        webgl;
+
+      if (isWebglUnsupported()) {
+        setMapWebglBlocked(true);
+        setMapWebglBlockedReason(webglFallbackReason());
+        return;
+      }
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 560;
@@ -238,8 +247,31 @@ export function Semarang3DMapCanvas() {
           data-map-focus={focus}
           data-map-style={mapStyle}
           data-map-tilt={tiltMode}
+          data-webgl-state={mapWebglBlocked ? 'fallback' : 'live'}
           className="h-full w-full cursor-grab active:cursor-grabbing"
         />
+
+        {mapWebglBlocked && (
+          <div className="absolute inset-0 flex items-center justify-center p-5">
+            <div className="max-w-xs rounded-lg border border-white/15 bg-[#0F172A]/95 p-4 text-center">
+              <p className="font-display text-sm font-bold text-white">
+                Peta 3D tidak dapat dibuka
+              </p>
+              <p className="mt-1.5 text-[11px] leading-relaxed text-slate-300">
+                {mapWebglBlockedReason || 'Perangkat tidak mendukung WebGL.'}
+              </p>
+              <a
+                href={STUDIO_PROFILE.googleMapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center gap-1 rounded bg-[#1A73E8] px-2.5 py-1.5 text-[10px] font-semibold text-white hover:bg-[#1557B0]"
+              >
+                Buka Google Maps
+                <ExternalLink className="h-2.5 w-2.5" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Google Maps Floating Location Card (Top-Left) */}
         <div className="pointer-events-auto absolute top-2.5 left-2.5 max-w-[205px] rounded-lg border border-white/20 bg-[#0F172A]/95 p-2.5 text-xs shadow-lg">

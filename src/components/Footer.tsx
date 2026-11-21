@@ -25,7 +25,10 @@ export function Footer() {
       if (cancelled) return;
 
       const webgl = createWebglUtils(THREE);
-      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
+      const { detectSoftwareWebGL, createPacedRenderLoop, isWebglUnsupported } = webgl;
+
+      // Strip 3D di footer dekoratif: tanpa WebGL cukup diam.
+      if (isWebglUnsupported()) return;
 
       const isSoftwareGl = detectSoftwareWebGL();
       const width = container.clientWidth || 1200;
