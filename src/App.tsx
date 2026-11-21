@@ -12,6 +12,7 @@ import { LiveProjectsDemoSection } from './components/LiveProjectsDemoSection';
 import { MaritimeSolutionsSection } from './components/MaritimeSolutionsSection';
 import { ServicesBento } from './components/ServicesBento';
 import { CaseStudiesSection } from './components/CaseStudiesSection';
+import { OfficialCertificatesSection } from './components/OfficialCertificatesSection';
 import { CredibilityAndCertificationsSection } from './components/CredibilityAndCertificationsSection';
 import { TeamSection } from './components/TeamSection';
 import { PartnersAndClientsSection } from './components/PartnersAndClientsSection';
@@ -117,6 +118,8 @@ export default function App() {
         />
 
         <CaseStudiesSection />
+
+        <OfficialCertificatesSection />
 
         <CredibilityAndCertificationsSection />
 
