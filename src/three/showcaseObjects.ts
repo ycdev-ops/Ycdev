@@ -1,6 +1,7 @@
-import * as THREE from 'three';
+import type * as THREE from 'three';
+import type { ProceduralTextureSet } from './webglTypes';
 import { computeExplodedOffset } from '../utils/telemetrySimulation';
-import type { ProceduralTextureSet } from './webglUtils';
+
 
 export type ShowcaseModelId =
   | 'iot-gateway'
@@ -76,7 +77,8 @@ export const SHOWCASE_MODELS: ShowcaseModelSpec[] = [
   },
 ];
 
-function tagExplodePart(
+export function createShowcaseObjects(THREE: typeof import('three')) {
+  function tagExplodePart(
   obj: THREE.Object3D,
   explodeVec: [number, number, number],
   spinAxis?: 'y'
@@ -86,12 +88,12 @@ function tagExplodePart(
   if (spinAxis) {
     obj.userData.spinAxis = spinAxis;
   }
-}
+  }
 
-export function buildShowcaseModel(
-  id: ShowcaseModelId,
-  textures: ProceduralTextureSet
-): THREE.Group {
+  function buildShowcaseModel(
+    id: ShowcaseModelId,
+    textures: ProceduralTextureSet
+  ): THREE.Group {
   const root = new THREE.Group();
 
   const matteChassis = new THREE.MeshStandardMaterial({
@@ -524,7 +526,7 @@ export function buildShowcaseModel(
   return root;
 }
 
-export function updateShowcaseExplodeAndSpin(
+  function updateShowcaseExplodeAndSpin(
   group: THREE.Group,
   explodeFactor: number,
   delta: number
@@ -542,4 +544,7 @@ export function updateShowcaseExplodeAndSpin(
       child.rotation.y += delta * 14;
     }
   });
+}
+
+  return { buildShowcaseModel, updateShowcaseExplodeAndSpin };
 }

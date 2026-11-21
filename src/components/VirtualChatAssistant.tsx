@@ -7,6 +7,7 @@ import {
   QUICK_CHAT_PROMPTS,
   type AssistantMessage,
 } from '../utils/virtualAssistant';
+import { assetUrl } from '../utils/siteAssets';
 
 interface VirtualChatAssistantProps {
   onSelectProduct: (productId: string) => void;
@@ -99,7 +100,7 @@ export function VirtualChatAssistant({
           <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-[#070B12] px-4 py-3">
             <div className="flex items-center gap-3">
               <img
-                src={STUDIO_PROFILE.logoImage}
+                src={assetUrl(STUDIO_PROFILE.logoImage)}
                 alt="Avatar Asisten Virtual YcDev"
                 referrerPolicy="no-referrer"
                 className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-sky-400/50"
@@ -256,7 +257,7 @@ export function VirtualChatAssistant({
           className="inline-flex h-12 items-center gap-2.5 rounded-full border border-sky-400/50 bg-[#0B121D] pl-1.5 pr-4 text-xs font-semibold text-white shadow-2xl transition-colors hover:border-sky-300 hover:bg-[#111B2B] cursor-pointer"
         >
           <img
-            src={STUDIO_PROFILE.logoImage}
+            src={assetUrl(STUDIO_PROFILE.logoImage)}
             alt="Logo Asisten YcDev"
             referrerPolicy="no-referrer"
             className="h-9 w-9 rounded-full object-cover ring-1 ring-sky-400/60"

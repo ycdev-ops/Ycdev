@@ -6,6 +6,12 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Relative base: semua URL yang dihasilkan Vite (script, CSS, gambar)
+    // menjadi relatif terhadap index.html, sehingga build ini bisa dipakai
+    // baik di domain root maupun di sub-path GitHub Pages (/Ycdev/).
+    // Path gambar di dalam kode sumber tetap disesuaikan saat runtime
+    // oleh src/utils/siteAssets.ts.
+    base: './',
     plugins: [
       react(),
       tailwindcss(),

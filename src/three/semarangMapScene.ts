@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import type * as THREE from 'three';
 
 export type SemarangMapFocus = 'hq' | 'port' | 'sea';
 export type SemarangMapStyle = 'satellite' | 'dark';
@@ -25,6 +25,11 @@ function worldToCanvas(x: number, z: number, w: number, h: number): [number, num
   const v = (z + MAP_DEPTH / 2) / MAP_DEPTH;
   return [u * w, v * h];
 }
+
+
+
+export function createSemarang3DMapSceneFactory(THREE: typeof import('three')) {
+  return function createSemarang3DMapScene(scene: THREE.Scene): SemarangMapController {
 
 function buildAerialTexture(mode: SemarangMapStyle): THREE.CanvasTexture {
   const w = 2048;
@@ -254,8 +259,6 @@ function buildAerialTexture(mode: SemarangMapStyle): THREE.CanvasTexture {
   tex.needsUpdate = true;
   return tex;
 }
-
-export function createSemarang3DMapScene(scene: THREE.Scene): SemarangMapController {
   const satTexture = buildAerialTexture('satellite');
   const darkTexture = buildAerialTexture('dark');
 
@@ -555,5 +558,6 @@ export function createSemarang3DMapScene(scene: THREE.Scene): SemarangMapControl
         }
       });
     },
+  };
   };
 }

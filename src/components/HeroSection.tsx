@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { HERO_METRICS, STUDIO_PROFILE } from '../data/ycdevData';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { assetUrl } from '../utils/siteAssets';
 
 interface HeroSectionProps {
   onConsultClick: () => void;
@@ -22,7 +23,7 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
         <div className="max-w-2xl">
           <div className="flex items-center gap-4">
             <img
-              src={STUDIO_PROFILE.logoImage}
+              src={assetUrl(STUDIO_PROFILE.logoImage)}
               alt="Emblem resmi YcDev"
               referrerPolicy="no-referrer"
               className="h-14 w-14 rounded-full object-cover ring-1 ring-sky-400/40 shadow-lg"

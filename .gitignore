@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Skrip refactor sekali pakai (bukan bagian dari aplikasi)
+*.mjs

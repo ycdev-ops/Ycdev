@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import type * as THREE from 'three';
+import { loadThree } from '../three/loadThree';
 import {
   Compass,
   ExternalLink,
@@ -14,12 +13,13 @@ import {
 } from 'lucide-react';
 import { STUDIO_PROFILE } from '../data/ycdevData';
 import {
-  createSemarang3DMapScene,
+  createSemarang3DMapSceneFactory,
   type SemarangMapFocus,
   type SemarangMapStyle,
   type SemarangMapTilt,
 } from '../three/semarangMapScene';
-import { createPacedRenderLoop, detectSoftwareWebGL } from '../three/webglUtils';
+import { createWebglUtils } from '../three/webglUtils';
+import type { LoopHandle } from '../three/webglTypes';
 
 export function Semarang3DMapCanvas() {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -61,127 +61,148 @@ export function Semarang3DMapCanvas() {
     const outer = containerRef.current;
     if (!container || !outer) return;
 
-    const isSoftwareGl = detectSoftwareWebGL();
-    const width = container.clientWidth || 560;
-    const height = container.clientHeight || 340;
+    let cancelled = false;
+    let cleanup: (() => void) | null = null;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isSoftwareGl,
-      alpha: false,
-      powerPreference: 'high-performance',
-    });
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(width, height);
+    loadThree().then(async (THREE) => {
+      if (cancelled) return;
+      const [{ OrbitControls }, { RoomEnvironment }] = await Promise.all([
+        import('three/addons/controls/OrbitControls.js'),
+        import('three/addons/environments/RoomEnvironment.js'),
+      ]);
+      if (cancelled) return;
 
-    const canvas = renderer.domElement;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    container.appendChild(canvas);
+      const webgl = createWebglUtils(THREE);
+      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b1f33);
-    scene.fog = new THREE.FogExp2(0x0b1f33, 0.018);
+      const isSoftwareGl = detectSoftwareWebGL();
+      const width = container.clientWidth || 560;
+      const height = container.clientHeight || 340;
 
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 60);
-    camera.position.set(-4.4, 5.5, 8.2);
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !isSoftwareGl,
+        alpha: false,
+        powerPreference: 'high-performance',
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(width, height);
 
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = !isSoftwareGl;
-    controls.dampingFactor = 0.06;
-    controls.minDistance = 3.0;
-    controls.maxDistance = 15.5;
-    controls.maxPolarAngle = Math.PI * 0.46;
-    controls.target.set(-2.2, 0.25, 0.8);
+      const canvas = renderer.domElement;
+      canvas.style.display = 'block';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      container.appendChild(canvas);
 
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    const envTarget = pmremGenerator.fromScene(new RoomEnvironment(), 0.04);
-    scene.environment = envTarget.texture;
-    pmremGenerator.dispose();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0b1f33);
+      scene.fog = new THREE.FogExp2(0x0b1f33, 0.018);
 
-    const hemi = new THREE.HemisphereLight(0xe0f2fe, 0x0f172a, 1.15);
-    scene.add(hemi);
+      const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 60);
+      camera.position.set(-4.4, 5.5, 8.2);
 
-    const key = new THREE.DirectionalLight(0xfffbeb, 2.2);
-    key.position.set(5, 9, 6);
-    scene.add(key);
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = !isSoftwareGl;
+      controls.dampingFactor = 0.06;
+      controls.minDistance = 3.0;
+      controls.maxDistance = 15.5;
+      controls.maxPolarAngle = Math.PI * 0.46;
+      controls.target.set(-2.2, 0.25, 0.8);
 
-    const mapController = createSemarang3DMapScene(scene);
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      const envTarget = pmremGenerator.fromScene(new RoomEnvironment(), 0.04);
+      scene.environment = envTarget.texture;
+      pmremGenerator.dispose();
 
-    let isVisible = true;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        isVisible = entries[0]?.isIntersecting ?? true;
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(outer);
+      const hemi = new THREE.HemisphereLight(0xe0f2fe, 0x0f172a, 1.15);
+      scene.add(hemi);
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth || 560;
-      const h = container.clientHeight || 340;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
+      const key = new THREE.DirectionalLight(0xfffbeb, 2.2);
+      key.position.set(5, 9, 6);
+      scene.add(key);
 
-    // Initial render frame
-    mapController.update(0.2, 0.016);
-    controls.update();
-    renderer.render(scene, camera);
+      const createSemarang3DMapScene = createSemarang3DMapSceneFactory(THREE);
+      const mapController = createSemarang3DMapScene(scene);
 
-    const zoomVec = new THREE.Vector3();
+      let isVisible = true;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? true;
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(outer);
 
-    const loop = createPacedRenderLoop(renderer, isSoftwareGl, (delta, elapsed) => {
-      const state = controlStateRef.current;
-      const hasPendingUpdate = state.cameraDirty || state.styleDirty || state.zoomDelta !== 0;
+      const handleResize = () => {
+        if (!container) return;
+        const w = container.clientWidth || 560;
+        const h = container.clientHeight || 340;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener('resize', handleResize);
 
-      if (isSoftwareGl && !isVisible && !hasPendingUpdate) {
-        return;
-      }
-
-      if (state.styleDirty) {
-        mapController.setMapStyle(state.style);
-        state.styleDirty = false;
-      }
-
-      if (state.cameraDirty) {
-        const preset = mapController.getTargetLookAt(state.focus, state.tilt);
-        camera.position.set(...preset.camPos);
-        controls.target.set(...preset.target);
-        state.cameraDirty = false;
-      }
-
-      if (state.zoomDelta !== 0) {
-        zoomVec.subVectors(camera.position, controls.target);
-        const factor = state.zoomDelta > 0 ? 0.8 : 1.24;
-        const nextLen = THREE.MathUtils.clamp(zoomVec.length() * factor, 3.0, 15.5);
-        zoomVec.setLength(nextLen);
-        camera.position.copy(controls.target).add(zoomVec);
-        state.zoomDelta = 0;
-      }
-
-      mapController.update(elapsed, delta);
+      // Initial render frame
+      mapController.update(0.2, 0.016);
       controls.update();
       renderer.render(scene, camera);
+
+      const zoomVec = new THREE.Vector3();
+
+      const loop = createPacedRenderLoop(renderer, isSoftwareGl, (delta, elapsed) => {
+        const state = controlStateRef.current;
+        const hasPendingUpdate = state.cameraDirty || state.styleDirty || state.zoomDelta !== 0;
+
+        if (isSoftwareGl && !isVisible && !hasPendingUpdate) {
+          return;
+        }
+
+        if (state.styleDirty) {
+          mapController.setMapStyle(state.style);
+          state.styleDirty = false;
+        }
+
+        if (state.cameraDirty) {
+          const preset = mapController.getTargetLookAt(state.focus, state.tilt);
+          camera.position.set(...preset.camPos);
+          controls.target.set(...preset.target);
+          state.cameraDirty = false;
+        }
+
+        if (state.zoomDelta !== 0) {
+          zoomVec.subVectors(camera.position, controls.target);
+          const factor = state.zoomDelta > 0 ? 0.8 : 1.24;
+          const nextLen = THREE.MathUtils.clamp(zoomVec.length() * factor, 3.0, 15.5);
+          zoomVec.setLength(nextLen);
+          camera.position.copy(controls.target).add(zoomVec);
+          state.zoomDelta = 0;
+        }
+
+        mapController.update(elapsed, delta);
+        controls.update();
+        renderer.render(scene, camera);
+      });
+
+      cleanup = () => {
+        loop.cancel();
+        observer.disconnect();
+        window.removeEventListener('resize', handleResize);
+        controls.dispose();
+        mapController.dispose();
+        envTarget.dispose();
+        renderer.dispose();
+        if (canvas.parentNode === container) {
+          container.removeChild(canvas);
+        }
+      };
     });
 
     return () => {
-      loop.cancel();
-      observer.disconnect();
-      window.removeEventListener('resize', handleResize);
-      controls.dispose();
-      mapController.dispose();
-      envTarget.dispose();
-      renderer.dispose();
-      if (canvas.parentNode === container) {
-        container.removeChild(canvas);
-      }
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 

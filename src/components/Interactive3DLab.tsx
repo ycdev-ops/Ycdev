@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import type * as THREE from 'three';
+import { loadThree } from '../three/loadThree';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import {
-  buildShowcaseModel,
   SHOWCASE_MODELS,
-  updateShowcaseExplodeAndSpin,
+  createShowcaseObjects,
   type ShowcaseModelId,
 } from '../three/showcaseObjects';
 import {
-  createPacedRenderLoop,
-  createProceduralTextures,
-  detectSoftwareWebGL,
-  type ProceduralTextureSet,
+  createWebglUtils,
 } from '../three/webglUtils';
+import type { ProceduralTextureSet } from '../three/webglTypes';
 
 interface Interactive3DLabProps {
   selectedModelId?: ShowcaseModelId;
@@ -63,185 +59,206 @@ export function Interactive3DLab({
     const container = mountRef.current;
     if (!container) return;
 
-    const isSoftwareGl = detectSoftwareWebGL();
-    const width = container.clientWidth || 960;
-    const height = container.clientHeight || 560;
+    let cancelled = false;
+    let cleanup: (() => void) | null = null;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isSoftwareGl,
-      alpha: false,
-      powerPreference: 'high-performance',
-    });
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(width, height);
-    renderer.shadowMap.enabled = !isSoftwareGl;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    loadThree().then(async (THREE) => {
+      if (cancelled) return;
+      const [{ OrbitControls }, { RoomEnvironment }] = await Promise.all([
+        import('three/addons/controls/OrbitControls.js'),
+        import('three/addons/environments/RoomEnvironment.js'),
+      ]);
+      if (cancelled) return;
 
-    const canvas = renderer.domElement;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    container.appendChild(canvas);
+      const webgl = createWebglUtils(THREE);
+      const showcase = createShowcaseObjects(THREE);
+      const { detectSoftwareWebGL, createPacedRenderLoop, createProceduralTextures } = webgl;
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x080c12);
-    scene.fog = new THREE.FogExp2(0x080c12, 0.04);
+      const isSoftwareGl = detectSoftwareWebGL();
+      const width = container.clientWidth || 960;
+      const height = container.clientHeight || 560;
 
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 40);
-    camera.position.set(3.4, 2.25, 3.8);
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !isSoftwareGl,
+        alpha: false,
+        powerPreference: 'high-performance',
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(width, height);
+      renderer.shadowMap.enabled = !isSoftwareGl;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = !isSoftwareGl;
-    controls.dampingFactor = 0.06;
-    controls.minDistance = 2.1;
-    controls.maxDistance = 7.5;
-    controls.maxPolarAngle = Math.PI * 0.49;
-    controls.target.set(0, 0.45, 0);
+      const canvas = renderer.domElement;
+      canvas.style.display = 'block';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      container.appendChild(canvas);
 
-    let userInteracting = false;
-    controls.addEventListener('start', () => {
-      userInteracting = true;
-    });
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x080c12);
+      scene.fog = new THREE.FogExp2(0x080c12, 0.04);
 
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    const envTarget = pmremGenerator.fromScene(new RoomEnvironment(), 0.04);
-    scene.environment = envTarget.texture;
-    pmremGenerator.dispose();
+      const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 40);
+      camera.position.set(3.4, 2.25, 3.8);
 
-    // Three-point studio rig + cool hemisphere
-    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x090b0e, 0.75);
-    scene.add(hemiLight);
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = !isSoftwareGl;
+      controls.dampingFactor = 0.06;
+      controls.minDistance = 2.1;
+      controls.maxDistance = 7.5;
+      controls.maxPolarAngle = Math.PI * 0.49;
+      controls.target.set(0, 0.45, 0);
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.3);
-    keyLight.position.set(4.5, 6.5, 4.5);
-    if (!isSoftwareGl) {
-      keyLight.castShadow = true;
-      keyLight.shadow.mapSize.set(1024, 1024);
-      keyLight.shadow.bias = -0.0005;
-    }
-    scene.add(keyLight);
+      let userInteracting = false;
+      controls.addEventListener('start', () => {
+        userInteracting = true;
+      });
 
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
-    rimLight.position.set(-4.5, 3.0, -4.5);
-    scene.add(rimLight);
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      const envTarget = pmremGenerator.fromScene(new RoomEnvironment(), 0.04);
+      scene.environment = envTarget.texture;
+      pmremGenerator.dispose();
 
-    // Subtle aerospace floor grid + contact shadow disc
-    const grid = new THREE.GridHelper(12, 24, 0x1e3a5f, 0x0f172a);
-    grid.position.y = -0.02;
-    scene.add(grid);
+      // Three-point studio rig + cool hemisphere
+      const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x090b0e, 0.75);
+      scene.add(hemiLight);
 
-    const textures = createProceduralTextures(
-      Math.min(4, renderer.capabilities.getMaxAnisotropy())
-    );
+      const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.3);
+      keyLight.position.set(4.5, 6.5, 4.5);
+      if (!isSoftwareGl) {
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.set(1024, 1024);
+        keyLight.shadow.bias = -0.0005;
+      }
+      scene.add(keyLight);
 
-    const shadowPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.8, 3.8),
-      new THREE.MeshBasicMaterial({
-        map: textures.contactShadow,
-        transparent: true,
-        depthWrite: false,
-        opacity: 0.55,
-      })
-    );
-    shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.y = 0.0;
-    scene.add(shadowPlane);
+      const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+      rimLight.position.set(-4.5, 3.0, -4.5);
+      scene.add(rimLight);
 
-    sceneRefs.current.scene = scene;
-    sceneRefs.current.textures = textures;
+      // Subtle aerospace floor grid + contact shadow disc
+      const grid = new THREE.GridHelper(12, 24, 0x1e3a5f, 0x0f172a);
+      grid.position.y = -0.02;
+      scene.add(grid);
 
-    const swapModelIfNeeded = () => {
-      const targetId = activeModelRef.current;
-      if (sceneRefs.current.loadedId === targetId) return false;
+      const textures = createProceduralTextures(
+        Math.min(4, renderer.capabilities.getMaxAnisotropy())
+      );
 
-      if (sceneRefs.current.modelGroup) {
-        scene.remove(sceneRefs.current.modelGroup);
-        sceneRefs.current.modelGroup.traverse((obj) => {
-          if ((obj as THREE.Mesh).isMesh) {
-            const m = obj as THREE.Mesh;
-            m.geometry?.dispose();
-          }
-        });
+      const shadowPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.8, 3.8),
+        new THREE.MeshBasicMaterial({
+          map: textures.contactShadow,
+          transparent: true,
+          depthWrite: false,
+          opacity: 0.55,
+        })
+      );
+      shadowPlane.rotation.x = -Math.PI / 2;
+      shadowPlane.position.y = 0.0;
+      scene.add(shadowPlane);
+
+      sceneRefs.current.scene = scene;
+      sceneRefs.current.textures = textures;
+
+      const swapModelIfNeeded = () => {
+        const targetId = activeModelRef.current;
+        if (sceneRefs.current.loadedId === targetId) return false;
+
+        if (sceneRefs.current.modelGroup) {
+          scene.remove(sceneRefs.current.modelGroup);
+          sceneRefs.current.modelGroup.traverse((obj) => {
+            if ((obj as THREE.Mesh).isMesh) {
+              const m = obj as THREE.Mesh;
+              m.geometry?.dispose();
+            }
+          });
+        }
+
+        const nextGroup = showcase.buildShowcaseModel(targetId, textures);
+        showcase.updateShowcaseExplodeAndSpin(nextGroup, explodeRef.current, 1.0);
+        scene.add(nextGroup);
+        sceneRefs.current.modelGroup = nextGroup;
+        sceneRefs.current.loadedId = targetId;
+        return true;
+      };
+
+      sceneRefs.current.swapNow = () => {
+        const changed = swapModelIfNeeded();
+        if (changed && sceneRefs.current.modelGroup) {
+          showcase.updateShowcaseExplodeAndSpin(
+            sceneRefs.current.modelGroup,
+            explodeRef.current,
+            0.5
+          );
+          controls.update();
+          renderer.render(scene, camera);
+        }
+      };
+
+      swapModelIfNeeded();
+      if (!isSoftwareGl) {
+        renderer.compile(scene, camera);
       }
 
-      const nextGroup = buildShowcaseModel(targetId, textures);
-      updateShowcaseExplodeAndSpin(nextGroup, explodeRef.current, 1.0);
-      scene.add(nextGroup);
-      sceneRefs.current.modelGroup = nextGroup;
-      sceneRefs.current.loadedId = targetId;
-      return true;
-    };
+      const handleResize = () => {
+        if (!container) return;
+        const w = container.clientWidth || 960;
+        const h = container.clientHeight || 560;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener('resize', handleResize);
 
-    sceneRefs.current.swapNow = () => {
-      const changed = swapModelIfNeeded();
-      if (changed && sceneRefs.current.modelGroup) {
-        updateShowcaseExplodeAndSpin(
-          sceneRefs.current.modelGroup,
-          explodeRef.current,
-          0.5
-        );
+      let lastHandledReset = 0;
+
+      const loopHandle = createPacedRenderLoop(renderer, isSoftwareGl, (delta) => {
+        swapModelIfNeeded();
+
+        if (resetSignalRef.current !== lastHandledReset) {
+          lastHandledReset = resetSignalRef.current;
+          camera.position.set(3.4, 2.25, 3.8);
+          controls.target.set(0, 0.45, 0);
+          userInteracting = false;
+        }
+
+        if (sceneRefs.current.modelGroup) {
+          showcase.updateShowcaseExplodeAndSpin(
+            sceneRefs.current.modelGroup,
+            explodeRef.current,
+            delta
+          );
+          if (autoOrbitRef.current && !userInteracting) {
+            sceneRefs.current.modelGroup.rotation.y += delta * 0.25;
+          }
+        }
+
         controls.update();
         renderer.render(scene, camera);
-      }
-    };
+      });
 
-    swapModelIfNeeded();
-    if (!isSoftwareGl) {
-      renderer.compile(scene, camera);
-    }
-
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth || 960;
-      const h = container.clientHeight || 560;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
-
-    let lastHandledReset = 0;
-
-    const loopHandle = createPacedRenderLoop(renderer, isSoftwareGl, (delta) => {
-      swapModelIfNeeded();
-
-      if (resetSignalRef.current !== lastHandledReset) {
-        lastHandledReset = resetSignalRef.current;
-        camera.position.set(3.4, 2.25, 3.8);
-        controls.target.set(0, 0.45, 0);
-        userInteracting = false;
-      }
-
-      if (sceneRefs.current.modelGroup) {
-        updateShowcaseExplodeAndSpin(
-          sceneRefs.current.modelGroup,
-          explodeRef.current,
-          delta
-        );
-        if (autoOrbitRef.current && !userInteracting) {
-          sceneRefs.current.modelGroup.rotation.y += delta * 0.25;
+      cleanup = () => {
+        loopHandle.cancel();
+        sceneRefs.current.loadedId = null;
+        sceneRefs.current.swapNow = null;
+        window.removeEventListener('resize', handleResize);
+        controls.dispose();
+        textures.dispose();
+        envTarget.dispose();
+        renderer.dispose();
+        if (canvas.parentNode === container) {
+          container.removeChild(canvas);
         }
-      }
-
-      controls.update();
-      renderer.render(scene, camera);
+      };
     });
 
     return () => {
-      loopHandle.cancel();
-      sceneRefs.current.loadedId = null;
-      sceneRefs.current.swapNow = null;
-      window.removeEventListener('resize', handleResize);
-      controls.dispose();
-      textures.dispose();
-      envTarget.dispose();
-      renderer.dispose();
-      if (canvas.parentNode === container) {
-        container.removeChild(canvas);
-      }
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 

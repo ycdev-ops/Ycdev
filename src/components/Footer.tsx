@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import type * as THREE from 'three';
+import { loadThree } from '../three/loadThree';
 import { STUDIO_PROFILE } from '../data/ycdevData';
-import { createFooter3DScene } from '../three/footer3DScene';
-import { createPacedRenderLoop, detectSoftwareWebGL } from '../three/webglUtils';
+import { createFooter3DSceneFactory } from '../three/footer3DScene';
+import { createWebglUtils } from '../three/webglUtils';
+import type { LoopHandle } from '../three/webglTypes';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { assetUrl } from '../utils/siteAssets';
 
 export function Footer() {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -14,73 +17,89 @@ export function Footer() {
     const footerEl = footerRef.current;
     if (!container || !footerEl) return;
 
-    const isSoftwareGl = detectSoftwareWebGL();
-    const width = container.clientWidth || 1200;
-    const height = container.clientHeight || 220;
+    let cancelled = false;
+    let cleanup: (() => void) | null = null;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isSoftwareGl,
-      alpha: false,
-      powerPreference: 'high-performance',
-    });
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(width, height);
+    loadThree().then((THREE) => {
+      if (cancelled) return;
 
-    const canvas = renderer.domElement;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    container.appendChild(canvas);
+      const webgl = createWebglUtils(THREE);
+      const { detectSoftwareWebGL, createPacedRenderLoop } = webgl;
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x040608);
-    scene.fog = new THREE.FogExp2(0x040608, 0.06);
+      const isSoftwareGl = detectSoftwareWebGL();
+      const width = container.clientWidth || 1200;
+      const height = container.clientHeight || 220;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 40);
-    camera.position.set(0, 0.9, 5.2);
-    camera.lookAt(0, -0.35, -3);
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !isSoftwareGl,
+        alpha: false,
+        powerPreference: 'high-performance',
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(width, height);
 
-    const footerScene = createFooter3DScene(scene);
+      const canvas = renderer.domElement;
+      canvas.style.display = 'block';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      container.appendChild(canvas);
 
-    let isVisible = false;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        isVisible = entries[0]?.isIntersecting ?? false;
-      },
-      { threshold: 0.02 }
-    );
-    observer.observe(footerEl);
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x040608);
+      scene.fog = new THREE.FogExp2(0x040608, 0.06);
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth || 1200;
-      const h = container.clientHeight || 220;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
+      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 40);
+      camera.position.set(0, 0.9, 5.2);
+      camera.lookAt(0, -0.35, -3);
 
-    // Draw initial frame
-    footerScene.update(0.5);
-    renderer.render(scene, camera);
+      const createFooter3DScene = createFooter3DSceneFactory(THREE);
+      const footerScene = createFooter3DScene(scene);
 
-    const loop = createPacedRenderLoop(renderer, isSoftwareGl, (_delta, elapsed) => {
-      if (isSoftwareGl && !isVisible) return;
-      footerScene.update(elapsed);
+      let isVisible = false;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? false;
+        },
+        { threshold: 0.02 }
+      );
+      observer.observe(footerEl);
+
+      const handleResize = () => {
+        if (!container) return;
+        const w = container.clientWidth || 1200;
+        const h = container.clientHeight || 220;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener('resize', handleResize);
+
+      // Draw initial frame
+      footerScene.update(0.5);
       renderer.render(scene, camera);
+
+      const loop = createPacedRenderLoop(renderer, isSoftwareGl, (_delta, elapsed) => {
+        if (isSoftwareGl && !isVisible) return;
+        footerScene.update(elapsed);
+        renderer.render(scene, camera);
+      });
+
+      cleanup = () => {
+        loop.cancel();
+        observer.disconnect();
+        window.removeEventListener('resize', handleResize);
+        footerScene.dispose();
+        renderer.dispose();
+        if (canvas.parentNode === container) {
+          container.removeChild(canvas);
+        }
+      };
     });
 
     return () => {
-      loop.cancel();
-      observer.disconnect();
-      window.removeEventListener('resize', handleResize);
-      footerScene.dispose();
-      renderer.dispose();
-      if (canvas.parentNode === container) {
-        container.removeChild(canvas);
-      }
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 
@@ -104,7 +123,7 @@ export function Footer() {
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col justify-between gap-8 px-6 md:flex-row md:items-center lg:px-10">
         <div className="flex items-start gap-4">
           <img
-            src={STUDIO_PROFILE.logoImage}
+            src={assetUrl(STUDIO_PROFILE.logoImage)}
             alt="Logo YcDev"
             referrerPolicy="no-referrer"
             className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-sky-400/35"

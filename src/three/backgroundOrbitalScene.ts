@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import type { ProceduralTextureSet } from './webglUtils';
+import type * as THREE from 'three';
+import type { ProceduralTextureSet } from './webglTypes';
 
 export interface OrbitalSceneController {
   update: (
@@ -11,6 +11,13 @@ export interface OrbitalSceneController {
   ) => void;
   dispose: () => void;
 }
+
+export function createOrbitalBackgroundSceneFactory(THREE: typeof import('three')) {
+  return function createOrbitalBackgroundScene(
+  scene: THREE.Scene,
+  camera: THREE.PerspectiveCamera,
+  textures: ProceduralTextureSet
+): OrbitalSceneController {
 
 const _dummy = new THREE.Object3D();
 const _packetPos = new THREE.Vector3();
@@ -98,12 +105,6 @@ function buildTelemetrySatellite(textures: ProceduralTextureSet): THREE.Group {
 
   return sat;
 }
-
-export function createOrbitalBackgroundScene(
-  scene: THREE.Scene,
-  camera: THREE.PerspectiveCamera,
-  textures: ProceduralTextureSet
-): OrbitalSceneController {
   // Deep ocean-earth curvature globe with atmospheric rings & coastal maritime beacons
   const earthGroup = new THREE.Group();
   earthGroup.position.set(2.5, -3.55, -4.6);
@@ -334,5 +335,6 @@ export function createOrbitalBackgroundScene(
         }
       });
     },
+  };
   };
 }

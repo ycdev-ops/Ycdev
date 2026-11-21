@@ -16,6 +16,7 @@ import {
   getCertificateTheme,
 } from './CertificateArtwork';
 import { ResilientImage } from './ResilientImage';
+import { assetUrl } from '../utils/siteAssets';
 
 const CERT_FILTERS: { id: CertificationFilter; label: string }[] = [
   { id: 'all', label: 'Semua Bidang (10)' },
@@ -65,7 +66,7 @@ export function CredibilityAndCertificationsSection() {
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0B0F17] lg:col-span-5 flex flex-col">
             <div className="relative flex-1 min-h-[340px] bg-[#06090F]">
               <ResilientImage
-                src={STUDIO_PROFILE.founderImage}
+                src={assetUrl(STUDIO_PROFILE.founderImage)}
                 alt="Yuan Nugroho, Pendiri & Principal Systems Architect YcDev di ruang pusat data"
                 fallbackTitle="Yuan Nugroho — Pendiri YcDev"
                 className="h-full w-full object-cover object-top"
@@ -256,7 +257,7 @@ export function CredibilityAndCertificationsSection() {
             >
               {/* Centered Subtle YcDev Verification Watermark */}
               <img
-                src="/assets/aistudio/SmartSelect_20261115_111928_Gallery_7ef9e0a2.png"
+                src={assetUrl("/assets/aistudio/SmartSelect_20261115_111928_Gallery_7ef9e0a2.png")}
                 alt=""
                 aria-hidden="true"
                 className="pointer-events-none absolute top-1/2 left-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full object-contain opacity-[0.06]"

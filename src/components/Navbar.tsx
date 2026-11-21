@@ -14,6 +14,7 @@ import {
 import { STUDIO_PROFILE } from '../data/ycdevData';
 import { MARITIME_CATEGORIES, MARITIME_SOLUTIONS } from '../utils/maritimeCatalog';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { assetUrl } from '../utils/siteAssets';
 
 interface NavbarProps {
   onConsultClick: () => void;
@@ -87,7 +88,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
         >
           <span className="relative inline-flex rounded-full p-0.5 ring-1 ring-sky-400/50 transition-transform duration-150 group-hover:scale-105">
             <img
-              src={STUDIO_PROFILE.logoImage}
+              src={assetUrl(STUDIO_PROFILE.logoImage)}
               alt="Logo YcDev"
               referrerPolicy="no-referrer"
               className="h-9 w-9 rounded-full object-cover"

@@ -1,11 +1,12 @@
-import * as THREE from 'three';
+import type * as THREE from 'three';
 
 export interface Footer3DController {
   update: (elapsed: number) => void;
   dispose: () => void;
 }
 
-export function createFooter3DScene(scene: THREE.Scene): Footer3DController {
+export function createFooter3DSceneFactory(THREE: typeof import('three')) {
+  return function createFooter3DScene(scene: THREE.Scene): Footer3DController {
   // Animated bathymetric / orbital wireframe horizon wave inside Footer
   const planeGeo = new THREE.PlaneGeometry(34, 12, 36, 16);
   const basePos = planeGeo.attributes.position.array.slice() as Float32Array;
@@ -85,5 +86,6 @@ export function createFooter3DScene(scene: THREE.Scene): Footer3DController {
         }
       });
     },
+  };
   };
 }
