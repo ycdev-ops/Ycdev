@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import {
+  Award,
   CheckCircle2,
   ChevronRight,
   Clock,
   Download,
   Eye,
-  FileText,
+  FileBadge,
   FolderKanban,
+  Landmark,
   Lock,
   RotateCcw,
+  ScrollText,
   Search,
   ShieldCheck,
   Sparkles,
@@ -19,6 +22,9 @@ import {
   countCompletedMilestones,
   filterProjectDocuments,
   filterProjectMilestones,
+  milestoneDeedNumber,
+  milestoneSignedAt,
+  milestoneDeedTitle,
   type DocumentCategory,
   type MilestoneFilter,
   type MilestoneStatus,
@@ -80,6 +86,57 @@ function renderMilestoneStatusLabel(status: MilestoneStatus) {
       <ChevronRight className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span>Terjadwal</span>
     </span>
+  );
+}
+
+/** Segel bulat bertuliskan status — penanda keabsahan pada lembar akta. */
+function DeedSeal({ status }: { status: MilestoneStatus }) {
+  const tone =
+    status === 'completed'
+      ? 'border-emerald-400/45 text-emerald-300'
+      : status === 'in_progress'
+        ? 'border-sky-400/45 text-sky-300'
+        : 'border-white/20 text-ink-400';
+  const label =
+    status === 'completed' ? 'TUNTAS' : status === 'in_progress' ? 'BERJALAN' : 'TERJADWAL';
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full border ${tone} bg-white/[0.02]`}
+    >
+      <Landmark className="h-4 w-4" aria-hidden="true" />
+      <span className="mt-1 font-mono text-[7px] font-bold tracking-[0.14em]">{label}</span>
+    </span>
+  );
+}
+
+/** Kop lembar resmi: nama lembaga + nomor akta + garis ganda ala dokumen. */
+function DeedLetterhead({
+  projectCode,
+  deedNumber,
+}: {
+  projectCode: string;
+  deedNumber: string;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 border-b border-sky-400/20 pb-3">
+      <div className="flex items-center gap-2.5">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-sky-400/40 bg-sky-400/10">
+          <ScrollText className="h-4 w-4 text-sky-300" aria-hidden="true" />
+        </span>
+        <div>
+          <p className="font-display text-[11px] font-bold tracking-wide text-white uppercase">
+            YcDev · {projectCode}
+          </p>
+          <p className="font-mono text-[9px] tracking-[0.16em] text-ink-400 uppercase">
+            Lembar Akta Resmi Proyek
+          </p>
+        </div>
+      </div>
+      <p className="text-right font-mono text-[10px] leading-relaxed text-sky-300/90 tabular-nums">
+        No. {deedNumber}
+      </p>
+    </div>
   );
 }
 
@@ -156,16 +213,18 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
         {/* Section Intro */}
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium tracking-wide text-sky-400">
+            <p className="eyebrow-tag inline-flex items-center gap-2">
+              <Landmark className="h-3.5 w-3.5" aria-hidden="true" />
               Ruang Kerja Klien Korporat Terintegrasi
             </p>
-            <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
-              Portal Klien: Status Pengembangan, Milestone & Brankas Dokumen
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
+              Portal Klien: Status Pengembangan, Akta Milestone & Brankas Dokumen
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-slate-300">
+          <p className="max-w-md text-sm leading-relaxed text-ink-400">
             Setiap mitra YcDev memperoleh dasbor transparan untuk memantau progres sprint,
-            verifikasi milestone lapangan, serta mengunduh dokumentasi PDF resmi berlogo dan watermark YcDev.
+            memverifikasi akta milestone lapangan, serta mengunduh dokumen PDF resmi
+            berlogo dan watermark YcDev dari brankas terdaftar.
           </p>
         </div>
 
@@ -410,40 +469,79 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                     </button>
                   </div>
                 ) : (
-                  <ol className="mt-4 divide-y divide-white/10 border-y border-white/10">
-                    {visibleMilestones.map((milestone) => (
-                      <li
-                        key={milestone.id}
-                        className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-start"
-                      >
-                        <div className="max-w-2xl">
-                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-400">
-                            <span className="font-mono font-semibold text-sky-400 tabular-nums">
-                              {milestone.phaseLabel}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            {renderMilestoneStatusLabel(milestone.status)}
-                            <span aria-hidden="true">·</span>
-                            <span className="text-slate-300">{milestone.deliverableTag}</span>
-                          </div>
-                          <p className="mt-1.5 font-display text-sm font-bold text-white">
-                            {milestone.title}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-ink-400">
-                            {milestone.summary}
-                          </p>
-                        </div>
+                  <ol className="mt-4 space-y-4">
+                    {visibleMilestones.map((milestone) => {
+                      const deedNumber = milestoneDeedNumber(
+                        activeProject.projectCode,
+                        milestone
+                      );
+                      return (
+                        <li
+                          key={milestone.id}
+                          data-testid={`portal-milestone-${milestone.id}`}
+                          className="rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5"
+                        >
+                          <DeedLetterhead
+                            projectCode={activeProject.projectCode}
+                            deedNumber={deedNumber}
+                          />
 
-                        <div className="shrink-0 text-left sm:text-right">
-                          <p className="font-mono text-xs font-semibold text-slate-200 tabular-nums">
-                            {milestone.targetDate}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-ink-400">
-                            PIC: {milestone.leadEngineer}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
+                          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="min-w-0 max-w-2xl">
+                              <p className="font-mono text-[11px] font-semibold tracking-[0.14em] text-sky-300/90 uppercase">
+                                {milestoneDeedTitle(milestone)}
+                              </p>
+                              <p className="mt-1.5 text-xs leading-relaxed text-ink-400">
+                                {milestone.summary}
+                              </p>
+
+                              <dl className="mt-3 grid grid-cols-1 gap-2 border-t border-white/10 pt-3 text-[11px] sm:grid-cols-2">
+                                <div>
+                                  <dt className="text-ink-500">Deliverable</dt>
+                                  <dd className="mt-0.5 font-medium text-slate-200">
+                                    {milestone.deliverableTag}
+                                  </dd>
+                                </div>
+                                <div>
+                                  <dt className="text-ink-500">Penanggung Jawab</dt>
+                                  <dd className="mt-0.5 font-medium text-slate-200">
+                                    {milestone.leadEngineer}
+                                  </dd>
+                                </div>
+                                <div>
+                                  <dt className="text-ink-500">Target</dt>
+                                  <dd className="mt-0.5 font-mono text-slate-200 tabular-nums">
+                                    {milestone.targetDate}
+                                  </dd>
+                                </div>
+                                <div>
+                                  <dt className="text-ink-500">Ditetapkan</dt>
+                                  <dd className="mt-0.5 text-slate-200">
+                                    {milestoneSignedAt(milestone)}
+                                  </dd>
+                                </div>
+                              </dl>
+
+                              <div className="mt-3 flex flex-wrap items-center gap-2">
+                                {renderMilestoneStatusLabel(milestone.status)}
+                                <span className="font-mono text-[10px] text-ink-500">
+                                  · Paraf {milestone.leadEngineer.split(' ')[0]}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex shrink-0 flex-row items-center gap-3 sm:flex-col sm:items-end">
+                              <DeedSeal status={milestone.status} />
+                              <p className="font-mono text-[10px] leading-relaxed text-ink-400 sm:text-right">
+                                Akta {milestone.phaseLabel}
+                                <br />
+                                {milestone.targetDate}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ol>
                 )}
               </div>
@@ -452,12 +550,35 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
               <div className="mt-10 border-t border-white/10 pt-8">
                 <div className="flex flex-col gap-4">
                   <div>
-                    <h4 className="font-display text-base font-bold text-white">
-                      Brankas Dokumentasi & Artefak Proyek
-                    </h4>
-                    <p className="mt-0.5 text-xs text-ink-400">
-                      Pratinjau isi spesifikasi teknis atau unduh dokumen PDF resmi berlogo dan watermark YcDev.
-                    </p>
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-sky-400/40 bg-sky-400/10">
+                        <Landmark className="h-4 w-4 text-sky-300" aria-hidden="true" />
+                      </span>
+                      <div>
+                        <h4 className="font-display text-base font-bold text-white">
+                          Brankas Dokumentasi & Artefak Proyek
+                        </h4>
+                        <p className="mt-0.5 text-xs text-ink-400">
+                          Registri resmi dokumen proyek — pratinjau isi atau unduh PDF berlogo YcDev.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Strip keabsahan brankas */}
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-y border-white/10 py-2.5 font-mono text-[10px] tracking-[0.14em] text-ink-400 uppercase">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Lock className="h-3 w-3 text-sky-400" aria-hidden="true" />
+                        Akses Terkendali
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <ShieldCheck className="h-3 w-3 text-emerald-400" aria-hidden="true" />
+                        Hash Terverifikasi
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Award className="h-3 w-3 text-sky-400" aria-hidden="true" />
+                        {visibleDocuments.length} Dokumen Terdaftar
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -526,10 +647,13 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                       <thead className="border-b border-white/10 bg-[#080C13] text-ink-400">
                         <tr>
                           <th scope="col" className="px-4 py-3 font-medium">
-                            Dokumen & Kode
+                            Dokumen & Nomor Registri
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
                             Kategori
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Akses
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
                             Versi & Format
@@ -544,6 +668,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                           const isPreviewed = previewDocId === doc.id;
                           const isDownloaded = downloadedDocIds.includes(doc.id);
                           const isDownloading = downloadingDocId === doc.id;
+                          const isRestricted = doc.access === 'terbatas';
                           return (
                             <tr
                               key={doc.id}
@@ -553,13 +678,16 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                             >
                               <td className="px-4 py-3.5">
                                 <div className="flex items-start gap-2.5">
-                                  <FileText
+                                  <FileBadge
                                     className="mt-0.5 h-4 w-4 shrink-0 text-sky-400"
                                     aria-hidden="true"
                                   />
                                   <div>
                                     <p className="font-medium text-white">{doc.title}</p>
-                                    <p className="mt-0.5 font-mono text-[11px] text-ink-400 tabular-nums">
+                                    <p className="mt-0.5 font-mono text-[11px] text-sky-300/90 tabular-nums">
+                                      {doc.registryNumber}
+                                    </p>
+                                    <p className="mt-0.5 font-mono text-[10px] text-ink-400 tabular-nums">
                                       {doc.code} · Diperbarui {doc.updatedAt}
                                     </p>
                                   </div>
@@ -567,6 +695,18 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                               </td>
                               <td className="px-4 py-3.5 text-slate-300 whitespace-nowrap">
                                 {doc.categoryLabel}
+                              </td>
+                              <td className="px-4 py-3.5 whitespace-nowrap">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] font-medium ${
+                                    isRestricted
+                                      ? 'border-amber-400/35 bg-amber-400/10 text-amber-300'
+                                      : 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                                  }`}
+                                >
+                                  <Lock className="h-3 w-3" aria-hidden="true" />
+                                  {isRestricted ? 'Terbatas' : 'Publik'}
+                                </span>
                               </td>
                               <td className="px-4 py-3.5 font-mono text-slate-300 tabular-nums whitespace-nowrap">
                                 {doc.version} · PDF Resmi · {doc.sizeLabel}
@@ -610,39 +750,73 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                   </div>
                 )}
 
-                {/* Document Inline Content Preview */}
+                {/* Document Inline Content Preview — lembar resmi bergaya brankas */}
                 {activePreviewDoc && (
                   <div
                     data-testid="portal-doc-preview"
-                    className="mt-4 rounded-xl border border-sky-400/25 bg-[#080C13] p-5"
+                    className="mt-4 overflow-hidden rounded-xl border border-sky-400/25 bg-[#080C13]"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
-                      <div>
-                        <p className="font-mono text-[11px] text-sky-400 tabular-nums">
-                          {activePreviewDoc.code} · {activePreviewDoc.version} · SHA-256:{' '}
-                          {activePreviewDoc.sha256Short}
-                        </p>
-                        <p className="mt-0.5 font-display text-sm font-bold text-white">
-                          Pratinjau: {activePreviewDoc.title}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        disabled={downloadingDocId === activePreviewDoc.id}
-                        onClick={() => handleDownloadDocument(activePreviewDoc)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-[#0F7641] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#15803D] disabled:opacity-60 cursor-pointer whitespace-nowrap"
-                      >
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>
-                          {downloadingDocId === activePreviewDoc.id
-                            ? 'Menyiapkan PDF...'
-                            : `Unduh ${buildDownloadFilename(activePreviewDoc)}`}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-sky-400/20 bg-gradient-to-b from-white/[0.03] to-transparent px-5 py-4">
+                      <div className="flex items-start gap-3">
+                        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-sky-400/40 bg-sky-400/10">
+                          <FileBadge className="h-4 w-4 text-sky-300" aria-hidden="true" />
                         </span>
-                      </button>
+                        <div>
+                          <p className="font-mono text-[10px] tracking-[0.16em] text-ink-400 uppercase">
+                            Lembar Dokumen · {activePreviewDoc.registryNumber}
+                          </p>
+                          <p className="mt-0.5 font-display text-sm font-bold text-white">
+                            {activePreviewDoc.title}
+                          </p>
+                          <p className="mt-0.5 font-mono text-[10px] text-sky-300/90 tabular-nums">
+                            {activePreviewDoc.code} · {activePreviewDoc.version} · SHA-256:{' '}
+                            {activePreviewDoc.sha256Short}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] font-medium ${
+                            activePreviewDoc.access === 'terbatas'
+                              ? 'border-amber-400/35 bg-amber-400/10 text-amber-300'
+                              : 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                          }`}
+                        >
+                          <Lock className="h-3 w-3" aria-hidden="true" />
+                          {activePreviewDoc.access === 'terbatas' ? 'Terbatas' : 'Publik'}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={downloadingDocId === activePreviewDoc.id}
+                          onClick={() => handleDownloadDocument(activePreviewDoc)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-[#0F7641] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#15803D] disabled:opacity-60 cursor-pointer whitespace-nowrap"
+                        >
+                          <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span>
+                            {downloadingDocId === activePreviewDoc.id
+                              ? 'Menyiapkan PDF...'
+                              : `Unduh ${buildDownloadFilename(activePreviewDoc)}`}
+                          </span>
+                        </button>
+                      </div>
                     </div>
-                    <pre className="mt-3 overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-slate-300">
+
+                    <pre className="max-h-[26rem] overflow-auto px-5 py-4 font-mono text-xs leading-relaxed text-slate-300 whitespace-pre-wrap">
                       {activePreviewDoc.contentBody}
                     </pre>
+
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-3">
+                      <p className="text-[11px] text-ink-400">
+                        Ditandatangani oleh{' '}
+                        <span className="font-medium text-slate-200">
+                          {activePreviewDoc.signatory ?? 'Yuan Nugroho · Principal Systems Architect'}
+                        </span>
+                      </p>
+                      <p className="font-mono text-[10px] tracking-[0.14em] text-ink-500 uppercase">
+                        YcDev · Semarang Barat
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

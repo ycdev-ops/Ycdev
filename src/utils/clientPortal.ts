@@ -15,6 +15,15 @@ export interface ProjectMilestone {
   targetDate: string;
   leadEngineer: string;
   deliverableTag: string;
+  /**
+   * Nomor akta/berita acara resmi. Dipakai pada tampilan "resmi" milestone
+   * (kop akta + segel). Bila kosong, nomor akta dibuat dari kode proyek.
+   */
+  deedNumber?: string;
+  /**
+   * Kota penandatanganan akta — memperkuat kesan dokumen resmi.
+   */
+  signedAt?: string;
 }
 
 export interface ProjectDocument {
@@ -29,6 +38,20 @@ export interface ProjectDocument {
   sizeLabel: string;
   sha256Short: string;
   contentBody: string;
+  /**
+   * Nomor registrasi dokumen di brankas (mis. "REG/PLD/04/2026").
+   * Menjaga brankas terasa seperti registri resmi, bukan tabel berkas biasa.
+   */
+  registryNumber: string;
+  /**
+   * Klasifikasi akses dokumen. Menjaga komitmen "brankas" — ada dokumen
+   * yang hanya dapat diunduh oleh pemegang kredensial.
+   */
+  access: 'publik' | 'terbatas';
+  /**
+   * Penandatangan dokumen ( nama & jabatan ), untuk kop resmi.
+   */
+  signatory?: string;
 }
 
 export interface ClientPortalProject {
@@ -78,6 +101,8 @@ export const CLIENT_PORTAL_PROJECTS: ClientPortalProject[] = [
         targetDate: '12 Sep 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Laporan Survei & Topologi VLAN',
+        deedNumber: 'AKTA-01/PLD/IX/2026',
+        signedAt: 'Semarang Barat, 12 September 2026',
       },
       {
         id: 'pld-m2',
@@ -89,6 +114,8 @@ export const CLIENT_PORTAL_PROJECTS: ClientPortalProject[] = [
         targetDate: '18 Okt 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Berita Acara Komisioning HW',
+        deedNumber: 'AKTA-02/PLD/X/2026',
+        signedAt: 'Perairan Tanjung Emas, 18 Oktober 2026',
       },
       {
         id: 'pld-m3',
@@ -100,6 +127,8 @@ export const CLIENT_PORTAL_PROJECTS: ClientPortalProject[] = [
         targetDate: '28 Nov 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Rilis Staging ENC v2.4',
+        deedNumber: 'AKTA-03/PLD/XI/2026',
+        signedAt: 'Semarang Barat, 28 November 2026',
       },
       {
         id: 'pld-m4',
@@ -111,6 +140,8 @@ export const CLIENT_PORTAL_PROJECTS: ClientPortalProject[] = [
         targetDate: '15 Des 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Sertifikat UAT & Runbook SLA',
+        deedNumber: 'AKTA-04/PLD/XII/2026',
+        signedAt: 'Semarang Barat, 15 Desember 2026',
       },
     ],
     documents: [
@@ -125,6 +156,9 @@ export const CLIENT_PORTAL_PROJECTS: ClientPortalProject[] = [
         updatedAt: '18 Nov 2026',
         sizeLabel: '184 KB',
         sha256Short: '9f4a21c8...e01b',
+        registryNumber: 'REG/PLD/ARCH/04/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `# Spesifikasi Arsitektur Telemetri Pelabuhan & Radar X-Band
 Kode Proyek : YCD-PLD-2026-01
 Klien      : PT Pelabuhan Indonesia (Pelindo)
@@ -151,6 +185,9 @@ Arsitek    : Yuan Nugroho (YcDev · Jalan Puri Eksekutif A1, Semarang Barat)
         updatedAt: '15 Nov 2026',
         sizeLabel: '96 KB',
         sha256Short: '4c81e0b2...77a9',
+        registryNumber: 'REG/PLD/SEC/02/2026',
+        access: 'terbatas',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `YCDEV SECURITY PRE-AUDIT SUMMARY
 Proyek : YCD-PLD-2026-01 (Pelindo Terminal Cluster)
 Status : 0 Kerentanan Kritis · Lolos Pengujian Penetrasi Internal
@@ -172,6 +209,9 @@ Ringkasan Kontrol:
         updatedAt: '10 Nov 2026',
         sizeLabel: '142 KB',
         sha256Short: '7a3d90f4...12c5',
+        registryNumber: 'REG/PLD/MAN/01/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `# Panduan Operator Pusat Kendali (NOC) Pelindo
 1. Pemantauan lapisan kapal pandu pada peta ENC S-57/S-63.
 2. Aktivasi layar mirroring radar X-Band saat jarak pandang < 1 mil laut.
@@ -207,6 +247,8 @@ Ringkasan Kontrol:
         targetDate: '04 Okt 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Dokumen Skema API VMS',
+        deedNumber: 'AKTA-01/GOV/X/2026',
+        signedAt: 'Semarang Barat, 4 Oktober 2026',
       },
       {
         id: 'gov-m2',
@@ -218,6 +260,8 @@ Ringkasan Kontrol:
         targetDate: '01 Nov 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Service Bridge Go + PostgreSQL',
+        deedNumber: 'AKTA-02/GOV/XI/2026',
+        signedAt: 'Semarang Barat, 1 November 2026',
       },
       {
         id: 'gov-m3',
@@ -229,6 +273,8 @@ Ringkasan Kontrol:
         targetDate: '05 Des 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Laporan Beban & Audit Log',
+        deedNumber: 'AKTA-03/GOV/XII/2026',
+        signedAt: 'Semarang Barat, 5 Desember 2026',
       },
       {
         id: 'gov-m4',
@@ -240,6 +286,8 @@ Ringkasan Kontrol:
         targetDate: '22 Des 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Paket Dokumentasi Produksi',
+        deedNumber: 'AKTA-04/GOV/XII/2026',
+        signedAt: 'Semarang Barat, 22 Desember 2026',
       },
     ],
     documents: [
@@ -254,6 +302,9 @@ Ringkasan Kontrol:
         updatedAt: '19 Nov 2026',
         sizeLabel: '64 KB',
         sha256Short: '2e9b11a0...90f1',
+        registryNumber: 'REG/GOV/API/03/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `{
   "projectCode": "YCD-GOV-2026-04",
   "protocol": "HTTPS/mTLS 1.3 + Ed25519 Signature",
@@ -274,6 +325,9 @@ Ringkasan Kontrol:
         updatedAt: '12 Nov 2026',
         sizeLabel: '118 KB',
         sha256Short: '8d12c4e7...33b4',
+        registryNumber: 'REG/GOV/SEC/01/2026',
+        access: 'terbatas',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `MATRIKS KEPATUHAN OWASP ASVS LEVEL 2
 Proyek : YCD-GOV-2026-04
 Temuan Kritis : 0
@@ -309,6 +363,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '10 Jul 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Firmware Rust v1.0-prod',
+        deedNumber: 'AKTA-01/TSL/VII/2026',
+        signedAt: 'Semarang Barat, 10 Juli 2026',
       },
       {
         id: 'tsl-m2',
@@ -320,6 +376,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '24 Agu 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Benchmark Report 40k RPS',
+        deedNumber: 'AKTA-02/TSL/VIII/2026',
+        signedAt: 'Semarang Barat, 24 Agustus 2026',
       },
       {
         id: 'tsl-m3',
@@ -331,6 +389,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '18 Sep 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Sertifikat Rilis Produksi',
+        deedNumber: 'AKTA-03/TSL/IX/2026',
+        signedAt: 'Semarang Barat, 18 September 2026',
       },
     ],
     documents: [
@@ -345,6 +405,9 @@ Validasi mTLS & Rate Limiter : LULUS`,
         updatedAt: '20 Nov 2026',
         sizeLabel: '52 KB',
         sha256Short: 'c190a4d2...61f8',
+        registryNumber: 'REG/TSL/PERF/09/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `date,cluster,avg_latency_ms,packet_integrity_pct,ota_status
 2026-11-01,APAC-BESS-01,10.8,99.99,VERIFIED
 2026-11-10,APAC-BESS-01,11.2,99.99,VERIFIED
@@ -361,6 +424,9 @@ Validasi mTLS & Rate Limiter : LULUS`,
         updatedAt: '02 Nov 2026',
         sizeLabel: '108 KB',
         sha256Short: '5b44e8c1...28a0',
+        registryNumber: 'REG/TSL/MAN/05/2026',
+        access: 'terbatas',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `# Prosedur OTA Firmware & Diagnostik CAN-Bus
 - Setiap paket firmware ditandatangani Ed25519 sebelum didistribusikan.
 - Jika watchdog gagal dalam 15 detik pasca-boot, partisi cadangan aktif otomatis.
@@ -395,6 +461,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '19 Okt 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Checklist Galangan Kobe',
+        deedNumber: 'AKTA-01/JPN/X/2026',
+        signedAt: 'Kobe, Jepang, 19 Oktober 2026',
       },
       {
         id: 'jpn-m2',
@@ -406,6 +474,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '08 Des 2026',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Profil Codec Delta v1.8',
+        deedNumber: 'AKTA-02/JPN/XII/2026',
+        signedAt: 'Semarang Barat, 8 Desember 2026',
       },
       {
         id: 'jpn-m3',
@@ -417,6 +487,8 @@ Validasi mTLS & Rate Limiter : LULUS`,
         targetDate: '10 Jan 2027',
         leadEngineer: 'Yuan Nugroho',
         deliverableTag: 'Konektor REST ERP & SLA',
+        deedNumber: 'AKTA-03/JPN/I/2027',
+        signedAt: 'Tokyo, Jepang, 10 Januari 2027',
       },
     ],
     documents: [
@@ -431,6 +503,9 @@ Validasi mTLS & Rate Limiter : LULUS`,
         updatedAt: '18 Nov 2026',
         sizeLabel: '132 KB',
         sha256Short: '3f77d1b9...55e2',
+        registryNumber: 'REG/JPN/SAT/02/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `# Analisis Efisiensi Kuota Satelit Lintas Pasifik
 Klien  : Nippon Marine Logistics Co., Ltd.
 Rute   : Yokohama - Kobe - Surabaya
@@ -450,6 +525,9 @@ Ringkasan Hasil Uji:
         updatedAt: '05 Nov 2026',
         sizeLabel: '74 KB',
         sha256Short: 'a621f9c0...44d3',
+        registryNumber: 'REG/JPN/SEC/01/2026',
+        access: 'publik',
+        signatory: 'Yuan Nugroho · Principal Systems Architect',
         contentBody: `SERTIFIKAT KALIBRASI & PROTEKSI PERANGKAT KERAS
 Unit   : YcDev Marine IoT Gateway IP67
 Uji    : Semprot Kabut Garam 72 Jam & Isolasi Galvanik 2.5 kV
@@ -511,4 +589,33 @@ export function buildDownloadFilename(doc: ProjectDocument): string {
 export function buildSummaryPdfFilename(projectCode: string): string {
   const safeProject = projectCode.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
   return `${safeProject}-laporan-status-ycdev.pdf`;
+}
+
+/**
+ * Nomor akta yang tampil. Bila milestone belum punya `deedNumber`, dibuat dari
+ * kode proyek + nomor urut tahap — supaya setiap akta punya nomor yang rapi.
+ */
+export function milestoneDeedNumber(
+  projectCode: string,
+  milestone: ProjectMilestone
+): string {
+  if (milestone.deedNumber) return milestone.deedNumber;
+  const seq = milestone.id.split('-').pop()?.toUpperCase() ?? '01';
+  return `AKTA-${seq}/${projectCode.replace('YCD-', '')}/2026`;
+}
+
+/**
+ * Kota + tanggal penandatanganan. Bila belum diisi, memakai targetDate dengan
+ * kota Semarang Barat — menandai akta diterbitkan oleh kantor YcDev.
+ */
+export function milestoneSignedAt(milestone: ProjectMilestone): string {
+  if (milestone.signedAt) return milestone.signedAt;
+  return `Semarang Barat, ${milestone.targetDate}`;
+}
+
+/**
+ * Judul dokumen resmi — dipakai pada kop akta milestone.
+ */
+export function milestoneDeedTitle(milestone: ProjectMilestone): string {
+  return `Akta ${milestone.phaseLabel} — ${milestone.title}`;
 }
