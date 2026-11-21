@@ -1,4 +1,5 @@
 import type { CertificateSealVariant, CertificationItem } from '../utils/credentialsCatalog';
+import { assetUrl } from '../utils/siteAssets';
 
 export interface CertificateThemeConfig {
   paperClass: string;
@@ -388,6 +389,31 @@ export function MiniatureCertificateSheet({ cert }: { cert: CertificationItem })
     cert.sealVariant === 'iso-mikrotik' ||
     cert.sealVariant === 'nmea';
 
+  // Kartu ini ringkasan katalog, bukan salinan dokumen resmi. Bila pemilik
+  // sudah mengunggah scan asli, kartu menampilkan dokumen itu sebagai gambar.
+  const hasOriginal = Boolean(cert.originalDocumentUrl);
+
+  if (hasOriginal) {
+    return (
+      <figure className="overflow-hidden rounded-lg border border-white/15 bg-black/20">
+        <img
+          src={assetUrl(cert.originalDocumentUrl!)}
+          alt={`Dokumen asli ${cert.title} — ${cert.issuer}`}
+          loading="lazy"
+          className="aspect-[4/3] w-full object-cover object-top"
+        />
+        <figcaption className="flex items-center justify-between gap-2 border-t border-white/10 bg-black/30 px-3 py-2">
+          <span className="truncate font-mono text-[9px] text-emerald-300">
+            {cert.originalDocumentLabel ?? 'Dokumen asli'}
+          </span>
+          <span className="shrink-0 font-mono text-[9px] tabular-nums text-slate-400">
+            {cert.badgeSeries}
+          </span>
+        </figcaption>
+      </figure>
+    );
+  }
+
   return (
     <div
       className={`relative overflow-hidden rounded-lg border bg-gradient-to-br p-3.5 ${theme.cardHeaderClass}`}
@@ -413,7 +439,7 @@ export function MiniatureCertificateSheet({ cert }: { cert: CertificationItem })
               isLightPaper ? 'text-slate-600' : 'text-slate-400'
             }`}
           >
-            Sertifikat Asli · {cert.badgeSeries}
+            Kartu Ringkasan · {cert.badgeSeries}
           </p>
 
           <p
@@ -457,7 +483,7 @@ export function MiniatureCertificateSheet({ cert }: { cert: CertificationItem })
             isLightPaper ? 'text-emerald-800' : 'text-emerald-400'
           }`}
         >
-          SAH · {cert.year}
+          TERBIT {cert.year}
         </span>
       </div>
     </div>

@@ -50,6 +50,14 @@ export interface CertificationItem {
   signaturePath: string;
   competencyFocus: string;
   verificationHighlights: string[];
+  /**
+   * Gambar sertifikat ASLI (scan/PDF/foto) yang diunggah pemilik.
+   * Relatif terhadap `public/`, mis. `/sertifikat/oscp.jpg`.
+   * Bila terisi, kartu dan modal menampilkan dokumen asli — bukan replika.
+   */
+  originalDocumentUrl?: string;
+  /** Label sumber dokumen, mis. "Scan asli · PDF". */
+  originalDocumentLabel?: string;
 }
 
 export interface GlobalPartner {

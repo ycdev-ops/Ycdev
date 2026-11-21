@@ -151,6 +151,13 @@ export function CredibilityAndCertificationsSection() {
                 Pembuktian formal melengkapi pengalaman autodidak lapangan—mencakup keamanan
                 ofensif, firmware IoT, arsitektur cloud, sistem terdistribusi, hingga elektronika maritim.
               </p>
+              <p className="mt-3 inline-flex items-start gap-2 rounded-lg border border-white/10 bg-[#0A0E14] px-3 py-2 text-[11px] leading-relaxed text-slate-400">
+                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-400" aria-hidden="true" />
+                <span>
+                  Kartu di bawah adalah ringkasan katalog kompetensi. Dokumen resmi (scan/PDF)
+                  ditampilkan apa adanya begitu diunggah—bukan hasil gambar ulang.
+                </span>
+              </p>
             </div>
 
             <div
@@ -227,7 +234,7 @@ export function CredibilityAndCertificationsSection() {
                       className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold transition-colors hover:text-white whitespace-nowrap shrink-0 cursor-pointer ${theme.buttonClass}`}
                     >
                       <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                      Lihat Sertifikat Asli
+                      {cert.originalDocumentUrl ? 'Lihat Dokumen' : 'Lihat Detail'}
                     </button>
                   </div>
                 </article>
@@ -250,12 +257,33 @@ export function CredibilityAndCertificationsSection() {
             className="my-auto w-full max-w-3xl overflow-hidden rounded-xl border border-white/15 bg-[#0B1018] p-4 sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Unique Per-Issuer Certificate Sheet */}
+            {/* Dokumen asli (scan/foto) bila diunggah pemilik; kalau belum,
+                tampilkan lembar ringkasan yang diberi label jelas. */}
             <div
               className={`relative overflow-hidden rounded-lg border-[3px] p-6 sm:p-8 ${modalTheme.paperClass}`}
               style={{ borderColor: modalTheme.accentHex }}
             >
-              {/* Centered Subtle YcDev Verification Watermark */}
+              {selectedCert.originalDocumentUrl ? (
+                <>
+                  <img
+                    src={assetUrl(selectedCert.originalDocumentUrl)}
+                    alt={`Dokumen asli ${selectedCert.title} terbitan ${selectedCert.issuer}`}
+                    className="h-auto w-full rounded object-contain"
+                  />
+                  <p className="mt-3 text-center font-mono text-[10px] text-emerald-600">
+                    {selectedCert.originalDocumentLabel ?? 'Dokumen asli'}
+                  </p>
+                </>
+              ) : (
+                <>
+                  {/* Tanda agar lembar ringkasan tidak disangka dokumen resmi */}
+                  <div className="mb-4 flex justify-center">
+                    <span className="rounded border border-dashed border-slate-500/50 px-3 py-1 font-mono text-[9px] tracking-[0.16em] text-slate-500 uppercase">
+                      Lembar Ringkasan — Bukan Dokumen Resmi
+                    </span>
+                  </div>
+
+                  {/* Centered Subtle YcDev Verification Watermark */}
               <img
                 src={assetUrl("/assets/aistudio/SmartSelect_20261115_111928_Gallery_7ef9e0a2.png")}
                 alt=""
@@ -430,6 +458,8 @@ export function CredibilityAndCertificationsSection() {
                   </div>
                 </div>
               </div>
+                </>
+              )}
             </div>
 
             {/* Competency Verification Highlights Strip */}
