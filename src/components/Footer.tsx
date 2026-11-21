@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as THREE from 'three';
+import { ArrowUp } from 'lucide-react';
 import { loadThree } from '../three/loadThree';
 import { STUDIO_PROFILE } from '../data/ycdevData';
 import { createFooter3DSceneFactory } from '../three/footer3DScene';
@@ -135,7 +136,7 @@ export function Footer() {
             <p className="mt-0.5 text-sm text-slate-300">
               {STUDIO_PROFILE.addressLine} · {STUDIO_PROFILE.cityRegion}
             </p>
-            <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-400">
+            <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-ink-400">
               <span>
                 Pendiri: {STUDIO_PROFILE.founder} · Telp:{' '}
                 <a
@@ -188,9 +189,18 @@ export function Footer() {
           </a>
         </nav>
 
-        <p className="text-xs text-slate-400">
-          © {new Date().getFullYear()} {STUDIO_PROFILE.brandName}. Seluruh hak cipta dilindungi.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
+          <p className="text-xs text-ink-400">
+            © {new Date().getFullYear()} {STUDIO_PROFILE.brandName}. Seluruh hak cipta dilindungi.
+          </p>
+          <a
+            href="#top"
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2.5 py-1.5 text-[11px] font-medium text-ink-400 transition-colors hover:border-sky-400/50 hover:text-white"
+          >
+            <ArrowUp className="h-3 w-3" aria-hidden="true" />
+            Kembali ke atas
+          </a>
+        </div>
       </div>
     </footer>
   );

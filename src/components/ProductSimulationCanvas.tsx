@@ -288,7 +288,7 @@ export function ProductSimulationCanvas({
           />
         </div>
 
-        <span className="font-mono text-[11px] text-slate-400 whitespace-nowrap tabular-nums">
+        <span className="font-mono text-[11px] text-ink-400 whitespace-nowrap tabular-nums">
           {durationLabel}
         </span>
       </div>

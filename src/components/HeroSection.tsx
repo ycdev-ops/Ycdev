@@ -11,13 +11,25 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
   return (
     <section
       id="top"
-      className="relative z-10 flex min-h-[calc(100vh-68px)] flex-col justify-between border-b border-white/10"
+      className="section-rule relative z-10 flex min-h-[calc(100vh-68px)] flex-col justify-between border-b border-white/10"
     >
       {/* Subtle directional gradient scrim on the left so text stays WCAG AA crisp over live 3D satellites */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#05070A]/90 via-[#05070A]/55 to-transparent"
       />
+
+      {/* Penanda posisi di halaman, lengkap dengan struktur halaman. */}
+      <nav
+        aria-label="Breadcrumb"
+        className="relative border-b border-white/5 bg-black/20"
+      >
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-6 py-2 font-mono text-[10px] tracking-[0.14em] text-ink-400 uppercase lg:px-10">
+          <span className="text-ink-500">YcDev</span>
+          <span aria-hidden="true">/</span>
+          <span className="text-sky-300">Beranda</span>
+        </div>
+      </nav>
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pt-16 pb-12 lg:px-10 lg:pt-24">
         <div className="max-w-2xl">
@@ -26,6 +38,7 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
               src={assetUrl(STUDIO_PROFILE.logoImage)}
               alt="Emblem resmi YcDev"
               referrerPolicy="no-referrer"
+              fetchPriority="high"
               className="h-14 w-14 rounded-full object-cover ring-1 ring-sky-400/40 shadow-lg"
             />
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-slate-300">
@@ -39,8 +52,12 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
             </p>
           </div>
 
+          <p className="eyebrow-tag mt-7">
+            Laboratorium Rekayasa · Semarang Barat
+          </p>
+
           <h1
-            className="mt-7 font-display font-bold tracking-tight text-white text-balance"
+            className="mt-4 font-display font-bold tracking-tight text-white text-balance"
             style={{ fontSize: 'clamp(2.5rem, 4.8vw, 4.25rem)', lineHeight: 1.05 }}
           >
             Arsitektur IoT, Full-Stack & Keamanan Siber Skala Misi Kritis
@@ -81,6 +98,14 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
             </button>
           </div>
         </div>
+
+        {/* Indikator gulir: mengisyaratkan halaman masih panjang. */}
+        <div className="mt-12 hidden items-center gap-3 lg:flex">
+          <span className="font-mono text-[10px] tracking-[0.2em] text-ink-500 uppercase">
+            Gulir untuk menjelajah
+          </span>
+          <span className="h-px w-24 bg-gradient-to-r from-sky-400/60 to-transparent" aria-hidden="true" />
+        </div>
       </div>
 
       {/* Full-width SpaceX-style quantitative telemetry strip anchored at bottom of hero */}
@@ -92,7 +117,7 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
                 {metric.value}
               </p>
               <p className="text-sm font-semibold text-slate-200">{metric.label}</p>
-              <p className="text-xs text-slate-400">{metric.context}</p>
+              <p className="text-xs text-ink-400">{metric.context}</p>
             </div>
           ))}
         </div>

@@ -1,0 +1,19 @@
+{
+  "name": "YcDev — Rekayasa IoT, Full-Stack & Keamanan Siber",
+  "short_name": "YcDev",
+  "description": "Studio rekayasa perangkat lunak, Internet of Things (IoT), pengembangan full-stack, dan keamanan siber di Semarang Barat.",
+  "lang": "id",
+  "start_url": "/Ycdev/",
+  "scope": "/Ycdev/",
+  "display": "standalone",
+  "background_color": "#05070A",
+  "theme_color": "#05070A",
+  "icons": [
+    {
+      "src": "/Ycdev/assets/aistudio/SmartSelect_20261115_111928_Gallery_7ef9e0a2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

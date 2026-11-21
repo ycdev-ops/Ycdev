@@ -104,7 +104,7 @@ export function FounderAndContactSection({
               <div className="flex items-start gap-3">
                 <User className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
                 <div>
-                  <dt className="text-xs text-slate-400">Pendiri</dt>
+                  <dt className="text-xs text-ink-400">Pendiri</dt>
                   <dd className="font-semibold text-white">
                     {STUDIO_PROFILE.founder} · {STUDIO_PROFILE.founderRole}
                   </dd>
@@ -114,18 +114,18 @@ export function FounderAndContactSection({
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
                 <div>
-                  <dt className="text-xs text-slate-400">Alamat Studio</dt>
+                  <dt className="text-xs text-ink-400">Alamat Studio</dt>
                   <dd className="font-semibold text-white">
                     {STUDIO_PROFILE.addressLine}
                   </dd>
-                  <dd className="text-xs text-slate-400">{STUDIO_PROFILE.cityRegion}</dd>
+                  <dd className="text-xs text-ink-400">{STUDIO_PROFILE.cityRegion}</dd>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
                 <div>
-                  <dt className="text-xs text-slate-400">Telepon / WhatsApp Langsung</dt>
+                  <dt className="text-xs text-ink-400">Telepon / WhatsApp Langsung</dt>
                   <dd className="mt-1 flex flex-wrap items-center gap-3">
                     <a
                       href={STUDIO_PROFILE.phoneHref}
@@ -143,7 +143,7 @@ export function FounderAndContactSection({
                       <span>Hubungi Kami</span>
                     </a>
                   </dd>
-                  <dd className="mt-1 text-xs text-slate-400">
+                  <dd className="mt-1 text-xs text-ink-400">
                     {STUDIO_PROFILE.operatingHours}
                   </dd>
                 </div>
@@ -185,30 +185,30 @@ export function FounderAndContactSection({
 
                 <dl className="mt-6 space-y-3 rounded-lg border border-white/10 bg-[#0D1015] p-5 text-sm">
                   <div>
-                    <dt className="text-xs text-slate-400">Kontak Balasan</dt>
+                    <dt className="text-xs text-ink-400">Kontak Balasan</dt>
                     <dd className="font-mono text-slate-200">
                       {submittedRecord.form.contact}
                     </dd>
                   </div>
                   {submittedRecord.form.company && (
                     <div>
-                      <dt className="text-xs text-slate-400">Organisasi</dt>
+                      <dt className="text-xs text-ink-400">Organisasi</dt>
                       <dd className="text-slate-200">{submittedRecord.form.company}</dd>
                     </div>
                   )}
                   {submittedRecord.scope && (
                     <div>
-                      <dt className="text-xs text-slate-400">Ruang Lingkup Terlampir</dt>
+                      <dt className="text-xs text-ink-400">Ruang Lingkup Terlampir</dt>
                       <dd className="text-sky-300">{submittedRecord.scope}</dd>
                     </div>
                   )}
                   <div>
-                    <dt className="text-xs text-slate-400">Kebutuhan Teknis</dt>
+                    <dt className="text-xs text-ink-400">Kebutuhan Teknis</dt>
                     <dd className="text-slate-200">{submittedRecord.form.message}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-400">Waktu Pengajuan</dt>
-                    <dd className="font-mono text-xs text-slate-400">
+                    <dt className="text-xs text-ink-400">Waktu Pengajuan</dt>
+                    <dd className="font-mono text-xs text-ink-400">
                       {submittedRecord.submittedAt}
                     </dd>
                   </div>
@@ -218,7 +218,7 @@ export function FounderAndContactSection({
                   <p className="text-xs font-semibold text-slate-200">
                     Alur Tindak Lanjut Teknis
                   </p>
-                  <ol className="mt-2.5 space-y-2 text-sm text-slate-400">
+                  <ol className="mt-2.5 space-y-2 text-sm text-ink-400">
                     <li>01. Tinjauan kebutuhan dan kelayakan arsitektur (maks. 1 hari kerja).</li>
                     <li>02. Sesi diskusi teknis bersama Yuan Nugroho (daring atau di Puri Eksekutif).</li>
                     <li>03. Penyampaian proposal arsitektur, jadwal sprint, dan penawaran resmi.</li>
@@ -255,7 +255,7 @@ export function FounderAndContactSection({
                   <h3 className="mt-2 font-display text-2xl font-bold text-white">
                     Konsultasi Proyek & Audit Sistem
                   </h3>
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-ink-400">
                     Jelaskan target sistem atau tantangan teknis Anda. Kami membalas dalam 1
                     hari kerja dari studio Puri Eksekutif, Semarang Barat.
                   </p>
@@ -303,7 +303,7 @@ export function FounderAndContactSection({
                           placeholder="Contoh: Hendra Wijaya"
                           aria-invalid={Boolean(errors.name)}
                           aria-describedby={errors.name ? 'consult-name-error' : undefined}
-                          className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                          className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
                         />
                         {errors.name && (
                           <p
@@ -336,7 +336,7 @@ export function FounderAndContactSection({
                           aria-describedby={
                             errors.contact ? 'consult-contact-error' : undefined
                           }
-                          className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                          className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
                         />
                         {errors.contact && (
                           <p
@@ -366,7 +366,7 @@ export function FounderAndContactSection({
                           setForm((prev) => ({ ...prev, company: e.target.value }))
                         }
                         placeholder="Nama perusahaan atau divisi"
-                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
                       />
                     </div>
 
@@ -390,7 +390,7 @@ export function FounderAndContactSection({
                         aria-describedby={
                           errors.message ? 'consult-message-error' : undefined
                         }
-                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                        className="mt-2 w-full rounded-lg border border-white/15 bg-[#0D1015] px-4 py-2.5 text-sm text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
                       />
                       {errors.message && (
                         <p
@@ -406,7 +406,7 @@ export function FounderAndContactSection({
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-ink-400">
                     Konsultasi awal tanpa kewajiban kontrak.
                   </p>
                   <button
@@ -426,7 +426,7 @@ export function FounderAndContactSection({
                 <p className="font-mono text-xs text-sky-400">
                   STANDAR OPERASIONAL & MOBILISASI LAPANGAN
                 </p>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px] text-ink-400">
                   SLA NOC 24/7 · INDONESIA-WIDE
                 </span>
               </div>
@@ -434,21 +434,21 @@ export function FounderAndContactSection({
                 <div>
                   <p className="font-mono text-xs text-sky-400 tabular-nums">01 · RESPON CEPAT</p>
                   <p className="mt-1 text-sm font-semibold text-white">Audit Teknis ≤ 24 Jam</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  <p className="mt-1 text-xs leading-relaxed text-ink-400">
                     Evaluasi kebutuhan NMEA, satelit, atau keamanan sistem langsung oleh Principal Architect.
                   </p>
                 </div>
                 <div>
                   <p className="font-mono text-xs text-sky-400 tabular-nums">02 · ON-BOARD SURVEY</p>
                   <p className="mt-1 text-sm font-semibold text-white">Seluruh Pelabuhan RI</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  <p className="mt-1 text-xs leading-relaxed text-ink-400">
                     Tim teknisi berangkat dari Semarang Barat menuju lokasi sandar kapal Anda.
                   </p>
                 </div>
                 <div>
                   <p className="font-mono text-xs text-sky-400 tabular-nums">03 · DUKUNGAN PENUH</p>
                   <p className="mt-1 text-sm font-semibold text-white">Garansi & OTA Recovery</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  <p className="mt-1 text-xs leading-relaxed text-ink-400">
                     Monitoring aktif NOC 24/7 serta pembaruan keamanan firmware jarak jauh.
                   </p>
                 </div>

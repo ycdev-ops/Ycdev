@@ -76,7 +76,7 @@ function renderMilestoneStatusLabel(status: MilestoneStatus) {
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-slate-400">
+    <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-ink-400">
       <ChevronRight className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span>Terjadwal</span>
     </span>
@@ -176,7 +176,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
         >
           {/* Console Top Bar Contract: Breadcrumb on Left, Concise Actions on Right */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#080C13] px-5 py-4 lg:px-7">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-400">
               <span className="inline-flex items-center gap-1.5 font-medium text-sky-400">
                 <Lock className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Portal Klien</span>
@@ -232,7 +232,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                   <FolderKanban className="h-4 w-4 text-sky-400" aria-hidden="true" />
                   <span>Daftar Klien Aktif</span>
                 </span>
-                <span className="font-mono text-xs text-slate-400 tabular-nums">
+                <span className="font-mono text-xs text-ink-400 tabular-nums">
                   {CLIENT_PORTAL_PROJECTS.length} Proyek
                 </span>
               </div>
@@ -253,7 +253,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 text-[11px]">
-                        <span className="font-mono text-slate-400 tabular-nums">
+                        <span className="font-mono text-ink-400 tabular-nums">
                           {project.projectCode}
                         </span>
                         <span className="font-mono font-semibold text-sky-400 tabular-nums">
@@ -263,7 +263,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                       <p className="mt-1 font-display text-sm font-bold text-white">
                         {project.clientName}
                       </p>
-                      <p className="mt-0.5 text-xs text-slate-400">{project.clientSector}</p>
+                      <p className="mt-0.5 text-xs text-ink-400">{project.clientSector}</p>
                       <div className="mt-2.5 flex items-center gap-1.5 text-[11px] font-medium text-slate-200">
                         {renderPhaseStatusIcon(project.status)}
                         <span>{project.status}</span>
@@ -273,7 +273,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                 })}
               </div>
 
-              <div className="mt-6 border-t border-white/10 pt-4 text-xs text-slate-400">
+              <div className="mt-6 border-t border-white/10 pt-4 text-xs text-ink-400">
                 <p className="font-medium text-slate-200">Akses Portal Produksi</p>
                 <p className="mt-1 leading-relaxed">
                   Klien aktif login menggunakan otentikasi mTLS atau SSO instansi untuk akses log
@@ -286,7 +286,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
             <div className="p-5 sm:p-7 lg:col-span-8 xl:col-span-9">
               {/* Project Header & Live Progress Track */}
               <div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-400">
                   <span className="inline-flex items-center gap-1.5 font-medium text-slate-200">
                     {renderPhaseStatusIcon(activeProject.status)}
                     <span>{activeProject.status}</span>
@@ -333,25 +333,25 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                 {/* Clean 4-Metric Hairline Strip (No Nested Card Boxes) */}
                 <dl className="mt-6 grid grid-cols-2 gap-5 border-y border-white/10 py-5 sm:grid-cols-4 sm:gap-6">
                   <div>
-                    <dt className="text-xs text-slate-400">Milestone Tuntas</dt>
+                    <dt className="text-xs text-ink-400">Milestone Tuntas</dt>
                     <dd className="mt-1 font-mono text-base font-bold text-white tabular-nums sm:text-lg">
                       {milestoneCounts.completed} / {milestoneCounts.total}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-400">Target Serah Terima</dt>
+                    <dt className="text-xs text-ink-400">Target Serah Terima</dt>
                     <dd className="mt-1 font-mono text-base font-bold text-white tabular-nums sm:text-lg">
                       {activeProject.targetHandover}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-400">Komitmen SLA</dt>
+                    <dt className="text-xs text-ink-400">Komitmen SLA</dt>
                     <dd className="mt-1 font-mono text-base font-bold text-sky-400 tabular-nums sm:text-lg">
                       {activeProject.slaTier}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-slate-400">Arsitek Penanggung Jawab</dt>
+                    <dt className="text-xs text-ink-400">Arsitek Penanggung Jawab</dt>
                     <dd className="mt-1 font-display text-base font-bold text-white sm:text-lg">
                       {activeProject.accountLead}
                     </dd>
@@ -366,7 +366,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                     <h4 className="font-display text-base font-bold text-white">
                       Pembaruan Milestone Proyek
                     </h4>
-                    <p className="mt-0.5 text-xs text-slate-400">
+                    <p className="mt-0.5 text-xs text-ink-400">
                       Riwayat tahapan pengiriman perangkat keras, API, dan verifikasi keamanan.
                     </p>
                   </div>
@@ -417,7 +417,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                         className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-start"
                       >
                         <div className="max-w-2xl">
-                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-400">
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-400">
                             <span className="font-mono font-semibold text-sky-400 tabular-nums">
                               {milestone.phaseLabel}
                             </span>
@@ -429,7 +429,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                           <p className="mt-1.5 font-display text-sm font-bold text-white">
                             {milestone.title}
                           </p>
-                          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                          <p className="mt-1 text-xs leading-relaxed text-ink-400">
                             {milestone.summary}
                           </p>
                         </div>
@@ -438,7 +438,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                           <p className="font-mono text-xs font-semibold text-slate-200 tabular-nums">
                             {milestone.targetDate}
                           </p>
-                          <p className="mt-0.5 text-[11px] text-slate-400">
+                          <p className="mt-0.5 text-[11px] text-ink-400">
                             PIC: {milestone.leadEngineer}
                           </p>
                         </div>
@@ -455,7 +455,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                     <h4 className="font-display text-base font-bold text-white">
                       Brankas Dokumentasi & Artefak Proyek
                     </h4>
-                    <p className="mt-0.5 text-xs text-slate-400">
+                    <p className="mt-0.5 text-xs text-ink-400">
                       Pratinjau isi spesifikasi teknis atau unduh dokumen PDF resmi berlogo dan watermark YcDev.
                     </p>
                   </div>
@@ -466,7 +466,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                         Cari dokumen proyek
                       </label>
                       <Search
-                        className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+                        className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-400"
                         aria-hidden="true"
                       />
                       <input
@@ -475,7 +475,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                         value={docSearch}
                         onChange={(e) => setDocSearch(e.target.value)}
                         placeholder="Cari judul atau kode..."
-                        className="w-full rounded-lg border border-white/15 bg-[#080C13] py-2 pr-3 pl-8 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                        className="w-full rounded-lg border border-white/15 bg-[#080C13] py-2 pr-3 pl-8 text-xs text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
                       />
                     </div>
 
@@ -508,7 +508,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                     <p className="text-sm font-medium text-slate-200">
                       Tidak ada dokumen yang cocok dengan pencarian &ldquo;{docSearch}&rdquo;.
                     </p>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-ink-400">
                       Atur ulang filter kategori atau kata kunci untuk menampilkan dokumen proyek.
                     </p>
                     <button
@@ -523,7 +523,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                 ) : (
                   <div className="mt-4 overflow-x-auto rounded-xl border border-white/10">
                     <table className="w-full border-collapse text-left text-xs">
-                      <thead className="border-b border-white/10 bg-[#080C13] text-slate-400">
+                      <thead className="border-b border-white/10 bg-[#080C13] text-ink-400">
                         <tr>
                           <th scope="col" className="px-4 py-3 font-medium">
                             Dokumen & Kode
@@ -559,7 +559,7 @@ export function ClientPortalSection({ onConsultProject }: ClientPortalSectionPro
                                   />
                                   <div>
                                     <p className="font-medium text-white">{doc.title}</p>
-                                    <p className="mt-0.5 font-mono text-[11px] text-slate-400 tabular-nums">
+                                    <p className="mt-0.5 font-mono text-[11px] text-ink-400 tabular-nums">
                                       {doc.code} · Diperbarui {doc.updatedAt}
                                     </p>
                                   </div>

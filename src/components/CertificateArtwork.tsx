@@ -25,7 +25,7 @@ const THEMES: Record<CertificateSealVariant, CertificateThemeConfig> = {
     headerBandClass: 'bg-[#DC2626] text-white',
     titleColorClass: 'text-[#FCA5A5]',
     bodyTextClass: 'text-slate-200',
-    mutedTextClass: 'text-slate-400',
+    mutedTextClass: 'text-ink-400',
     accentHex: '#EF4444',
     foilFillHex: '#991B1B',
     foilStrokeHex: '#FCA5A5',
@@ -41,7 +41,7 @@ const THEMES: Record<CertificateSealVariant, CertificateThemeConfig> = {
     headerBandClass: 'bg-[#0284C7] text-white',
     titleColorClass: 'text-cyan-300',
     bodyTextClass: 'text-slate-200',
-    mutedTextClass: 'text-slate-400',
+    mutedTextClass: 'text-ink-400',
     accentHex: '#22D3EE',
     foilFillHex: '#0369A1',
     foilStrokeHex: '#67E8F9',
@@ -89,7 +89,7 @@ const THEMES: Record<CertificateSealVariant, CertificateThemeConfig> = {
     headerBandClass: 'bg-[#FF9900] text-[#0F172A]',
     titleColorClass: 'text-[#FFB84D]',
     bodyTextClass: 'text-slate-200',
-    mutedTextClass: 'text-slate-400',
+    mutedTextClass: 'text-ink-400',
     accentHex: '#FF9900',
     foilFillHex: '#FF9900',
     foilStrokeHex: '#FFF3E0',
@@ -121,7 +121,7 @@ const THEMES: Record<CertificateSealVariant, CertificateThemeConfig> = {
     headerBandClass: 'bg-[#1D4ED8] text-white',
     titleColorClass: 'text-[#1E40AF]',
     bodyTextClass: 'text-slate-700',
-    mutedTextClass: 'text-slate-500',
+    mutedTextClass: 'text-ink-400',
     accentHex: '#2563EB',
     foilFillHex: '#BFDBFE',
     foilStrokeHex: '#1D4ED8',
@@ -169,7 +169,7 @@ const THEMES: Record<CertificateSealVariant, CertificateThemeConfig> = {
     headerBandClass: 'bg-[#0369A1] text-sky-50',
     titleColorClass: 'text-sky-300',
     bodyTextClass: 'text-slate-200',
-    mutedTextClass: 'text-slate-400',
+    mutedTextClass: 'text-ink-400',
     accentHex: '#38BDF8',
     foilFillHex: '#E2E8F0',
     foilStrokeHex: '#0284C7',
@@ -406,7 +406,7 @@ export function MiniatureCertificateSheet({ cert }: { cert: CertificationItem })
           <span className="truncate font-mono text-[9px] text-emerald-300">
             {cert.originalDocumentLabel ?? 'Dokumen asli'}
           </span>
-          <span className="shrink-0 font-mono text-[9px] tabular-nums text-slate-400">
+          <span className="shrink-0 font-mono text-[9px] tabular-nums text-ink-400">
             {cert.badgeSeries}
           </span>
         </figcaption>
@@ -436,7 +436,7 @@ export function MiniatureCertificateSheet({ cert }: { cert: CertificationItem })
 
           <p
             className={`mt-2 font-mono text-[9px] uppercase tracking-widest ${
-              isLightPaper ? 'text-slate-600' : 'text-slate-400'
+              isLightPaper ? 'text-slate-600' : 'text-ink-400'
             }`}
           >
             Kartu Ringkasan · {cert.badgeSeries}

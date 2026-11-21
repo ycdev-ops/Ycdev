@@ -59,6 +59,8 @@ export function ResilientImage({
     <img
       src={candidates[index]}
       alt={alt}
+      loading="lazy"
+      decoding="async"
       referrerPolicy="no-referrer"
       onError={() => {
         if (index + 1 < candidates.length) {

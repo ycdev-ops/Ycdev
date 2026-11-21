@@ -72,7 +72,7 @@ export function ProjectEstimator({
           <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
             Kalkulator Estimasi Arsitektur & Durasi
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-400">
+          <p className="mt-3 text-sm leading-relaxed text-ink-400">
             Kombinasikan disiplin rekayasa yang dibutuhkan untuk mendapatkan perkiraan
             timeline sprint, komposisi tim, serta kisaran anggaran proyek sebelum diskusi teknis.
           </p>
@@ -135,7 +135,7 @@ export function ProjectEstimator({
                       }`}
                     >
                       <span className="block text-sm font-semibold">{opt.label}</span>
-                      <span className="mt-1 block text-xs text-slate-400">{opt.desc}</span>
+                      <span className="mt-1 block text-xs text-ink-400">{opt.desc}</span>
                     </button>
                   );
                 })}
@@ -171,7 +171,7 @@ export function ProjectEstimator({
           <div className="flex flex-col justify-between rounded-xl border border-white/10 bg-[#11151B] p-6 sm:p-8 lg:col-span-5">
             {estimate.isValid ? (
               <div>
-                <p className="text-xs font-medium text-slate-400">
+                <p className="text-xs font-medium text-ink-400">
                   Perkiraan Investasi & Durasi
                 </p>
                 <p
@@ -219,7 +219,7 @@ export function ProjectEstimator({
                     <p className="text-xs font-semibold text-slate-200">
                       Rekomendasi Stack Teknis
                     </p>
-                    <p className="mt-1 font-mono text-xs leading-relaxed text-slate-400">
+                    <p className="mt-1 font-mono text-xs leading-relaxed text-ink-400">
                       {estimate.recommendedStack.join(' · ')}
                     </p>
                   </div>
@@ -230,7 +230,7 @@ export function ProjectEstimator({
                 <p className="text-base font-medium text-slate-200">
                   Belum ada disiplin dipilih
                 </p>
-                <p className="mt-2 text-sm text-slate-400">
+                <p className="mt-2 text-sm text-ink-400">
                   Aktifkan minimal satu disiplin rekayasa di sebelah kiri untuk menghitung
                   estimasi durasi dan kebutuhan tim.
                 </p>
@@ -242,7 +242,7 @@ export function ProjectEstimator({
                 type="button"
                 disabled={!estimate.isValid}
                 onClick={handleApplyClick}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-ink-400 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
               >
                 Gunakan Ruang Lingkup Ini
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />

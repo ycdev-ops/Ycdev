@@ -183,7 +183,7 @@ export function VirtualChatAssistant({
                   </div>
                 )}
 
-                <span className="mt-1 font-mono text-[10px] text-slate-500 tabular-nums">
+                <span className="mt-1 font-mono text-[10px] text-ink-400 tabular-nums">
                   {msg.timestamp}
                 </span>
               </div>
@@ -193,7 +193,7 @@ export function VirtualChatAssistant({
 
           {/* Direct Footer Action + Message Form */}
           <div className="border-t border-white/10 bg-[#070B12] p-3">
-            <div className="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="mb-2 flex items-center justify-between text-[11px] text-ink-400">
               <span>Konsultasi langsung:</span>
               <button
                 type="button"
@@ -214,7 +214,7 @@ export function VirtualChatAssistant({
                 onChange={(e) => setInput(e.target.value)}
                 aria-label="Tulis pertanyaan untuk asisten virtual"
                 placeholder="Tanya produk, harga, atau survei..."
-                className="flex-1 rounded-lg border border-white/15 bg-[#0C111A] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                className="flex-1 rounded-lg border border-white/15 bg-[#0C111A] px-3 py-2 text-xs text-white placeholder:text-ink-400 focus:border-sky-400 focus:outline-none"
               />
               <button
                 type="submit"
@@ -239,7 +239,7 @@ export function VirtualChatAssistant({
           className="inline-flex h-11 items-center gap-1.5 rounded-full border border-white/15 bg-[#0A0F18] px-3.5 text-xs font-medium text-slate-200 shadow-lg transition-colors hover:border-sky-400/50 hover:text-white cursor-pointer"
         >
           {audioState.isMuted ? (
-            <VolumeX className="h-4 w-4 text-slate-400" aria-hidden="true" />
+            <VolumeX className="h-4 w-4 text-ink-400" aria-hidden="true" />
           ) : (
             <Volume2 className="h-4 w-4 text-sky-400" aria-hidden="true" />
           )}

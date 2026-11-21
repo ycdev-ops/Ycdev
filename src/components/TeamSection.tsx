@@ -65,11 +65,11 @@ export function TeamSection({ onConsultTeamMember }: TeamSectionProps) {
           <h3 className="mt-1 font-display text-lg font-bold tracking-tight text-white">
             {member.name}
           </h3>
-          <p className="mt-0.5 text-xs text-slate-400">{member.division}</p>
+          <p className="mt-0.5 text-xs text-ink-400">{member.division}</p>
 
           <p className="mt-3 text-xs leading-relaxed text-slate-300">{member.bio}</p>
 
-          <p className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-slate-400">
+          <p className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-ink-400">
             {member.specialties.join(' · ')}
           </p>
         </div>
@@ -161,7 +161,7 @@ export function TeamSection({ onConsultTeamMember }: TeamSectionProps) {
               <dl className="mt-6 grid grid-cols-1 gap-5 border-t border-white/10 pt-5 sm:grid-cols-3">
                 {TEAM_BRIEFING_SHOWCASE.highlights.map((item) => (
                   <div key={item.label}>
-                    <dt className="text-xs text-slate-400">{item.label}</dt>
+                    <dt className="text-xs text-ink-400">{item.label}</dt>
                     <dd className="mt-1 font-mono text-sm font-bold text-white tabular-nums">
                       {item.value}
                     </dd>

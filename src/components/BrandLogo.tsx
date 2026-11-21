@@ -131,7 +131,7 @@ export function BrandLogo({ id, className = 'h-7 w-auto' }: BrandLogoProps) {
             <path d="M18 7L28 12.5V23.5L18 29L8 23.5V12.5L18 7Z" stroke="#64748B" strokeWidth="1.2" />
           </svg>
           <span className="font-display text-sm font-bold text-white">
-            HashiCorp <span className="text-slate-400">CNCF</span>
+            HashiCorp <span className="text-ink-400">CNCF</span>
           </span>
         </div>
       );

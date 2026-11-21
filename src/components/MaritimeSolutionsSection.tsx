@@ -89,7 +89,7 @@ export function MaritimeSolutionsSection({
             <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
               Produk Perangkat Keras, Platform Cloud & Layanan Maritim
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
+            <p className="mt-3 text-sm leading-relaxed text-ink-400">
               Setiap produk dilengkapi foto perangkat nyata, tayangan operasi video proyek,
               spesifikasi teknis mendalam, dan alur implementasi dari ruang kemudi hingga pusat NOC.
             </p>
@@ -131,7 +131,7 @@ export function MaritimeSolutionsSection({
             <p className="mt-1 font-display text-base font-semibold text-white">
               Akuisisi Anjungan & Kamar Mesin
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="mt-1 text-xs leading-relaxed text-ink-400">
               Edge Box IP67 membaca NMEA 0183/2000, radar X/S-Band, flow meter BBM, dan RPM mesin.
             </p>
           </div>
@@ -143,7 +143,7 @@ export function MaritimeSolutionsSection({
             <p className="mt-1 font-display text-base font-semibold text-white">
               4G/5G Pantai ↔ LEO & L-Band Laut Lepas
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="mt-1 text-xs leading-relaxed text-ink-400">
               Failover mulus antara seluler pesisir, Starlink Maritime, dan Iridium/Inmarsat.
             </p>
           </div>
@@ -155,7 +155,7 @@ export function MaritimeSolutionsSection({
             <p className="mt-1 font-display text-base font-semibold text-white">
               ENC Dashboard, VMS KKP & NOC 24/7
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="mt-1 text-xs leading-relaxed text-ink-400">
               Mirroring radar jarak jauh, peringatan WhatsApp otomatis, serta pemantauan NOC penuh.
             </p>
           </div>
@@ -178,7 +178,7 @@ export function MaritimeSolutionsSection({
                       {category.title}
                     </h3>
                   </div>
-                  <p className="max-w-xl text-xs leading-relaxed text-slate-400 sm:text-right">
+                  <p className="max-w-xl text-xs leading-relaxed text-ink-400 sm:text-right">
                     {category.subtitle}
                   </p>
                 </div>
@@ -270,7 +270,7 @@ export function MaritimeSolutionsSection({
                             <dl className="mt-4 grid grid-cols-1 gap-2 rounded-lg border border-white/10 bg-[#090D14] p-3 sm:grid-cols-2">
                               {item.detailedSpecs.slice(0, 4).map((spec) => (
                                 <div key={spec.label} className="min-w-0">
-                                  <dt className="text-[11px] text-slate-400">
+                                  <dt className="text-[11px] text-ink-400">
                                     {spec.label}
                                   </dt>
                                   <dd className="truncate font-mono text-xs font-medium text-slate-100 tabular-nums">
@@ -364,7 +364,7 @@ export function MaritimeSolutionsSection({
                 >
                   {detailProduct.name}
                 </h3>
-                <p className="mt-0.5 text-xs text-slate-400 sm:text-sm">{detailProduct.tagline}</p>
+                <p className="mt-0.5 text-xs text-ink-400 sm:text-sm">{detailProduct.tagline}</p>
               </div>
               <button
                 type="button"
@@ -385,7 +385,7 @@ export function MaritimeSolutionsSection({
                   fallbackTitle={detailProduct.name}
                   className="aspect-video w-full object-cover"
                 />
-                <p className="border-t border-white/10 bg-[#0A0E16] px-3 py-1.5 font-mono text-[11px] text-slate-400">
+                <p className="border-t border-white/10 bg-[#0A0E16] px-3 py-1.5 font-mono text-[11px] text-ink-400">
                   FOTO PERANGKAT NYATA · {detailProduct.protocolOrStandard}
                 </p>
               </div>
@@ -413,7 +413,7 @@ export function MaritimeSolutionsSection({
                       key={row.label}
                       className="flex flex-col justify-between gap-1 border-b border-white/5 pb-1.5 last:border-b-0 last:pb-0 sm:flex-row sm:items-center"
                     >
-                      <dt className="text-slate-400">{row.label}</dt>
+                      <dt className="text-ink-400">{row.label}</dt>
                       <dd className="font-mono font-medium text-sky-300 tabular-nums">
                         {row.value}
                       </dd>
@@ -454,7 +454,7 @@ export function MaritimeSolutionsSection({
                   Buka Objek 3D Interaktif
                 </button>
               ) : (
-                <span className="font-mono text-xs text-slate-400">
+                <span className="font-mono text-xs text-ink-400">
                   {detailProduct.protocolOrStandard}
                 </span>
               )}

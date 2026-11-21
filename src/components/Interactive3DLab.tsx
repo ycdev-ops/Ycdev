@@ -284,7 +284,7 @@ export function Interactive3DLab({
               Laboratorium Perangkat Keras & Arsitektur 3D
             </h2>
           </div>
-          <p className="max-w-md text-sm text-slate-400">
+          <p className="max-w-md text-sm text-ink-400">
             Putar 360°, perbesar detail sambungan, dan tarik slider komponen terurai
             untuk meninjau setiap unit perangkat keras dan sistem yang kami bangun.
           </p>
@@ -311,7 +311,7 @@ export function Interactive3DLab({
             <p className="mt-1 text-xs leading-relaxed text-slate-300">
               {currentSpec.summary}
             </p>
-            <p className="mt-2 font-mono text-[11px] text-slate-400">
+            <p className="mt-2 font-mono text-[11px] text-ink-400">
               {currentSpec.specs}
             </p>
           </div>

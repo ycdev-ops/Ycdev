@@ -50,7 +50,7 @@ export function CaseStudiesSection() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <span className="font-mono text-xs text-slate-400 tabular-nums">
+            <span className="font-mono text-xs text-ink-400 tabular-nums">
               Menampilkan {visibleStudies.length} dari {CASE_STUDIES.length} proyek
             </span>
 
@@ -98,12 +98,12 @@ export function CaseStudiesSection() {
                 </div>
               ) : (
                 <div className="flex aspect-[4/3] w-full flex-col justify-between border-b border-white/10 bg-gradient-to-br from-[#131922] via-[#0F141C] to-[#0B0E14] p-6 sm:p-8">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-ink-400">
                     <span className="font-mono text-sky-400">{study.disciplineLabel}</span>
-                    <Layers className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                    <Layers className="h-4 w-4 text-ink-400" aria-hidden="true" />
                   </div>
                   <div className="space-y-3">
-                    <p className="font-mono text-xs text-slate-400">
+                    <p className="font-mono text-xs text-ink-400">
                       Ringkasan Topologi Sistem
                     </p>
                     <ul className="space-y-2 border-t border-white/10 pt-3">
@@ -114,7 +114,7 @@ export function CaseStudiesSection() {
                       ))}
                     </ul>
                   </div>
-                  <p className="font-mono text-xs text-slate-400">
+                  <p className="font-mono text-xs text-ink-400">
                     {study.stack.join(' · ')}
                   </p>
                 </div>
@@ -122,7 +122,7 @@ export function CaseStudiesSection() {
 
               <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
                 <div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-ink-400">
                     <span>{study.disciplineLabel}</span>
                     <span aria-hidden="true">·</span>
                     <span className="tabular-nums">{study.year}</span>
@@ -143,10 +143,10 @@ export function CaseStudiesSection() {
                   <p className="font-mono text-sm font-medium text-sky-300 tabular-nums">
                     {study.impactMetric}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">{study.impactContext}</p>
+                  <p className="mt-1 text-xs text-ink-400">{study.impactContext}</p>
 
                   <div className="mt-5 flex items-center justify-between gap-4">
-                    <p className="truncate font-mono text-xs text-slate-400">
+                    <p className="truncate font-mono text-xs text-ink-400">
                       {study.stack.join(' · ')}
                     </p>
                     <button
@@ -180,7 +180,7 @@ export function CaseStudiesSection() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-ink-400">
                   {selectedStudy.disciplineLabel} · {selectedStudy.year} ·{' '}
                   {selectedStudy.clientSector}
                 </p>
@@ -210,7 +210,7 @@ export function CaseStudiesSection() {
               <p className="font-mono text-sm font-medium text-sky-300 tabular-nums">
                 {selectedStudy.impactMetric}
               </p>
-              <p className="mt-1 text-xs text-slate-400">{selectedStudy.impactContext}</p>
+              <p className="mt-1 text-xs text-ink-400">{selectedStudy.impactContext}</p>
             </div>
 
             <div className="mt-6">
@@ -230,7 +230,7 @@ export function CaseStudiesSection() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
-              <p className="font-mono text-xs text-slate-400">
+              <p className="font-mono text-xs text-ink-400">
                 Stack: {selectedStudy.stack.join(' · ')}
               </p>
               <button

@@ -90,7 +90,7 @@ export function CredibilityAndCertificationsSection() {
                   <p className="font-mono text-lg font-semibold text-white tabular-nums">
                     {stat.value}
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-slate-400">
+                  <p className="mt-0.5 text-[11px] leading-snug text-ink-400">
                     {stat.label}
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export function CredibilityAndCertificationsSection() {
             </div>
 
             <div className="mt-8 border-t border-white/10 pt-6">
-              <p className="font-mono text-xs text-slate-400">
+              <p className="font-mono text-xs text-ink-400">
                 LINIMASA PERJALANAN REKAYASA AUTODIDAK
               </p>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -127,7 +127,7 @@ export function CredibilityAndCertificationsSection() {
                     <h3 className="mt-1.5 font-display text-sm font-semibold text-white">
                       {item.title}
                     </h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink-400">
                       {item.description}
                     </p>
                   </div>
@@ -148,7 +148,7 @@ export function CredibilityAndCertificationsSection() {
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
                 Sertifikat Keahlian di Seluruh Disiplin Rekayasa
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+              <p className="mt-3 text-sm leading-relaxed text-ink-400">
                 Pembuktian formal melengkapi pengalaman autodidak lapangan—mencakup keamanan
                 ofensif, firmware IoT, arsitektur cloud, sistem terdistribusi, hingga elektronika maritim.
               </p>
@@ -203,7 +203,7 @@ export function CredibilityAndCertificationsSection() {
                       <h3 className="mt-1 font-display text-base font-bold leading-snug text-white">
                         {cert.title}
                       </h3>
-                      <p className="mt-1 text-xs font-medium text-slate-400">
+                      <p className="mt-1 text-xs font-medium text-ink-400">
                         {cert.issuer}
                       </p>
                       <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
@@ -218,7 +218,7 @@ export function CredibilityAndCertificationsSection() {
                       <p className="truncate font-mono text-[10px] text-slate-300 tabular-nums">
                         {cert.credentialCode}
                       </p>
-                      <p className="font-mono text-[10px] text-slate-400 tabular-nums">
+                      <p className="font-mono text-[10px] text-ink-400 tabular-nums">
                         Terbit: {cert.issuedDate}
                       </p>
                     </div>
@@ -272,7 +272,7 @@ export function CredibilityAndCertificationsSection() {
                 <>
                   {/* Tanda agar lembar ringkasan tidak disangka dokumen resmi */}
                   <div className="mb-4 flex justify-center">
-                    <span className="rounded border border-dashed border-slate-500/50 px-3 py-1 font-mono text-[9px] tracking-[0.16em] text-slate-500 uppercase">
+                    <span className="rounded border border-dashed border-slate-500/50 px-3 py-1 font-mono text-[9px] tracking-[0.16em] text-ink-400 uppercase">
                       Lembar Ringkasan — Bukan Dokumen Resmi
                     </span>
                   </div>

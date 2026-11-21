@@ -25,7 +25,7 @@ export function ServicesBento({
               Empat Disiplin Rekayasa dalam Satu Tim Terpadu
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-slate-400">
+          <p className="max-w-md text-sm leading-relaxed text-ink-400">
             Menghilangkan celah koordinasi antara tim firmware, pengembang aplikasi, dan
             auditor keamanan sejak hari pertama perancangan.
           </p>
@@ -49,7 +49,7 @@ export function ServicesBento({
                     <span className="font-mono text-sm font-medium text-sky-400 tabular-nums">
                       {service.indexLabel}
                     </span>
-                    <span className="text-xs text-slate-400">{service.subtitle}</span>
+                    <span className="text-xs text-ink-400">{service.subtitle}</span>
                   </div>
 
                   <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-white lg:text-2xl">
@@ -77,7 +77,7 @@ export function ServicesBento({
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
-                  <p className="font-mono text-xs text-slate-400">{service.stackLabel}</p>
+                  <p className="font-mono text-xs text-ink-400">{service.stackLabel}</p>
 
                   <button
                     type="button"

@@ -156,7 +156,7 @@ export function LiveProjectsDemoSection() {
                       ? 'Pulihkan Kondisi Normal'
                       : 'Uji Anomali Sensor'}
                   </button>
-                  <span className="font-mono text-xs text-slate-400">
+                  <span className="font-mono text-xs text-ink-400">
                     Mode: {iotState.bufferMode}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export function LiveProjectsDemoSection() {
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:col-span-7">
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Suhu Ruang Dingin</p>
+                  <p className="text-xs text-ink-400">Suhu Ruang Dingin</p>
                   <p
                     data-testid="live-iot-temp"
                     className={`mt-2 font-mono text-2xl font-semibold tabular-nums ${
@@ -176,21 +176,21 @@ export function LiveProjectsDemoSection() {
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Latensi Edge</p>
+                  <p className="text-xs text-ink-400">Latensi Edge</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {iotState.latencyMs} ms
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Node Terhubung</p>
+                  <p className="text-xs text-ink-400">Node Terhubung</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {iotState.activeNodes}/{iotState.totalNodes}
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Kelembapan</p>
+                  <p className="text-xs text-ink-400">Kelembapan</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {iotState.humidityPct}%
                   </p>
@@ -198,7 +198,7 @@ export function LiveProjectsDemoSection() {
 
                 {/* Live Animated Waveform SVG */}
                 <div className="col-span-2 rounded-lg border border-white/10 bg-[#080B11] p-4 sm:col-span-4">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-ink-400">
                     <span>Grafik Telemetri Waktu Nyata (Tick #{iotState.tick})</span>
                     <span className="font-mono text-sky-400">MQTT over TLS 1.3</span>
                   </div>
@@ -272,7 +272,7 @@ export function LiveProjectsDemoSection() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:col-span-7">
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Upaya Intrusi Diblokir</p>
+                  <p className="text-xs text-ink-400">Upaya Intrusi Diblokir</p>
                   <p
                     data-testid="live-sec-blocked"
                     className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums"
@@ -281,20 +281,20 @@ export function LiveProjectsDemoSection() {
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Waktu Isolasi</p>
+                  <p className="text-xs text-ink-400">Waktu Isolasi</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-sky-300 tabular-nums">
                     {secState.mitigationMs} ms
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Umur Kunci mTLS</p>
+                  <p className="text-xs text-ink-400">Umur Kunci mTLS</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {secState.mtlsKeyAgeMinutes} mnt
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4 sm:col-span-3">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-ink-400">
                     Status Keamanan: {secState.threatLevel}
                   </p>
                   <p
@@ -347,31 +347,31 @@ export function LiveProjectsDemoSection() {
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:col-span-7">
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Worker Pool Go</p>
+                  <p className="text-xs text-ink-400">Worker Pool Go</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {pipelineMetrics.goWorkerCount} pod
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Latensi p99 DB</p>
+                  <p className="text-xs text-ink-400">Latensi p99 DB</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-sky-300 tabular-nums">
                     {pipelineMetrics.dbP99Ms} ms
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Redis Cache Hit</p>
+                  <p className="text-xs text-ink-400">Redis Cache Hit</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {pipelineMetrics.cacheHitRatePct}%
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4">
-                  <p className="text-xs text-slate-400">Jejak Memori</p>
+                  <p className="text-xs text-ink-400">Jejak Memori</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-white tabular-nums">
                     {pipelineMetrics.memoryFootprintMb} MB
                   </p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-[#080B11] p-4 sm:col-span-2">
-                  <p className="text-xs text-slate-400">Antrean Kafka Lag</p>
+                  <p className="text-xs text-ink-400">Antrean Kafka Lag</p>
                   <p className="mt-2 font-mono text-2xl font-semibold text-emerald-300 tabular-nums">
                     {pipelineMetrics.kafkaLagMessages} pesan
                   </p>

@@ -19,6 +19,7 @@ import { ClientPortalSection } from './components/ClientPortalSection';
 import { ProjectEstimator } from './components/ProjectEstimator';
 import { FounderAndContactSection } from './components/FounderAndContactSection';
 import { Footer } from './components/Footer';
+import { TableOfContents } from './components/TableOfContents';
 import { VirtualChatAssistant } from './components/VirtualChatAssistant';
 
 export default function App() {
@@ -85,6 +86,7 @@ export default function App() {
     <div className="relative min-h-screen bg-[#05070A] text-[#F8FAFC]">
       <OrbitalBackgroundCanvas />
       <ScrollProgressBar />
+      <TableOfContents />
       <Navbar
         onConsultClick={scrollToContact}
         onSelectProduct={handleSelectProduct}

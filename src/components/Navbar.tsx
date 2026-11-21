@@ -178,7 +178,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
                                 <span className="block text-xs font-semibold text-white">
                                   {prod.name}
                                 </span>
-                                <span className="block truncate text-[11px] text-slate-400">
+                                <span className="block truncate text-[11px] text-ink-400">
                                   {prod.protocolOrStandard}
                                 </span>
                               </button>
@@ -191,7 +191,7 @@ export function Navbar({ onConsultClick, onSelectProduct }: NavbarProps) {
                 </div>
 
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                  <p className="font-mono text-[11px] text-slate-400">
+                  <p className="font-mono text-[11px] text-ink-400">
                     Butuh spesifikasi kustom kapal atau integrasi API pelabuhan?
                   </p>
                   <div className="flex items-center gap-2.5">

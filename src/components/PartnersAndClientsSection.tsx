@@ -46,7 +46,7 @@ export function PartnersAndClientsSection({
                 Partner Perusahaan Dunia & Infrastruktur Strategis
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-slate-400">
+            <p className="max-w-md text-sm leading-relaxed text-ink-400">
               Kolaborasi teknis bersama penyedia satelit orbit rendah, komputasi AI tepi,
               perangkat jaringan kelas operator, serta keamanan cloud internasional.
             </p>
@@ -64,7 +64,7 @@ export function PartnersAndClientsSection({
                 <div>
                   <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3.5">
                     <BrandLogo id={partner.id} className="h-9 w-9 shrink-0" />
-                    <Globe2 className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+                    <Globe2 className="h-4 w-4 shrink-0 text-ink-400" aria-hidden="true" />
                   </div>
                   <h3 className="mt-3.5 font-display text-sm font-bold text-white">
                     {partner.name}
@@ -72,7 +72,7 @@ export function PartnersAndClientsSection({
                   <p className="mt-0.5 text-xs font-medium text-sky-400">
                     {partner.category}
                   </p>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  <p className="mt-2 text-xs leading-relaxed text-ink-400">
                     {partner.collaborationScope}
                   </p>
                 </div>
@@ -91,7 +91,7 @@ export function PartnersAndClientsSection({
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
                 Dipercaya Instansi Pelindo, Pemerintah, Tesla & Perusahaan Luar Negeri
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+              <p className="mt-3 text-sm leading-relaxed text-ink-400">
                 Rekam jejak pengerjaan sistem telemetri pelabuhan, kepatuhan VMS pemerintah,
                 keamanan energi EV, hingga armada kapal niaga lintas Jepang, Singapura, dan Eropa.
               </p>
@@ -164,7 +164,7 @@ export function PartnersAndClientsSection({
                     <p className="mt-1 text-sm font-medium text-slate-200">
                       {customer.projectTitle}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                    <p className="mt-3 text-sm leading-relaxed text-ink-400">
                       {customer.scopeSummary}
                     </p>
 
@@ -179,14 +179,14 @@ export function PartnersAndClientsSection({
                         />
                         <span>“{customer.testimonialQuote}”</span>
                       </blockquote>
-                      <p className="mt-2 text-[11px] font-medium text-slate-400">
+                      <p className="mt-2 text-[11px] font-medium text-ink-400">
                         — {customer.spokesperson}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                    <p className="font-mono text-[11px] text-slate-400">
+                    <p className="font-mono text-[11px] text-ink-400">
                       {customer.stackTags.join(' · ')}
                     </p>
                     <button

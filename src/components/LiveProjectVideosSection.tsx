@@ -93,7 +93,7 @@ export function LiveProjectVideosSection() {
               Video Projek Nyata & Telemetri Operasional
             </h2>
           </div>
-          <p className="max-w-md text-sm text-slate-400">
+          <p className="max-w-md text-sm text-ink-400">
             Tinjau cuplikan proyek langsung di pelabuhan, anjungan kapal, dan ruang server
             bersama aliran data telemetri waktu nyata.
           </p>
@@ -145,7 +145,7 @@ export function LiveProjectVideosSection() {
                     }`}
                   />
                 </div>
-                <div className="flex items-center justify-between border-t border-white/10 bg-[#0A0E16] px-3 py-2 font-mono text-[11px] text-slate-400">
+                <div className="flex items-center justify-between border-t border-white/10 bg-[#0A0E16] px-3 py-2 font-mono text-[11px] text-ink-400">
                   <span className="inline-flex items-center gap-1.5 text-slate-200">
                     <Film className="h-3.5 w-3.5 text-sky-400" aria-hidden="true" />
                     REKAMAN OPERASI LAPANGAN
@@ -203,7 +203,7 @@ export function LiveProjectVideosSection() {
                     <p className="mt-0.5 text-sm font-semibold leading-snug text-white">
                       {ch.title}
                     </p>
-                    <p className="mt-1 truncate text-xs text-slate-400">
+                    <p className="mt-1 truncate text-xs text-ink-400">
                       {ch.location}
                     </p>
                   </div>
