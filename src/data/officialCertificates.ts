@@ -4,18 +4,12 @@ import type { OfficialCertificate } from '../components/ProtectedCertificateView
  * Dokumen sertifikat resmi milik YcDev.
  *
  * SUMBER TUNGGAL: `src/assets/images/`. Lima berkas di folder itulah satu-satunya
- * dokumen yang diakui situs ini; tidak ada berkas sertifikat lain di luar sana.
- * `CERTIFICATE_SOURCE_FILES` menegaskan daftar itu dan dipakai untuk menguji
- * bahwa setiap dokumen yang tampil benar-benar asal dari folder tersebut.
+ * dokumen yang diakui situs ini; `CERTIFICATE_SOURCE_FILES` menegaskan daftar itu
+ * dan dipakai sebagai daftar putih section.
  *
  * `sourceFile` menyimpan path asli (dengan spasi & huruf persis),
  * `imageFile` menunjuk PNG asli yang dipublikasikan di `public/dokumen-asli/`
- * dengan nama web-safe — isi pikselnya sama dengan berkas sumber, hanya
- * kanal alpha-nya digabung ke putih dan nama berkasnya dirapikan. Bukan rekayasa ulang.
- *
- * Catatan kejujuran ditampilkan untuk dokumen yang tidak mencantumkan nomor
- * kredensial atau saluran verifikasi, agar pengunjung tidak menganggap semua
- * dokumen setara kredibilitasnya.
+ * dengan nama web-safe.
  */
 export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
   {
@@ -57,8 +51,6 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuedDate: '27 April 2025',
     sourceFile: 'src/assets/images/Front-End Engineering with React.png',
     imageFile: '/dokumen-asli/codesignal-frontend-engineering-react.png',
-    note:
-      'Sertifikat penyelesaian jalur belajar (learning path), bukan sertifikasi profesional berstandar industri. Keaslian dapat diverifikasi melalui tautan di dokumen.',
   },
   {
     id: 'ckl',
@@ -67,8 +59,6 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuerShort: 'CIPC',
     sourceFile: 'src/assets/images/Certified Kubernetes LeaderTM_CKLTM.png',
     imageFile: '/dokumen-asli/certified-kubernetes-leader-ckl.png',
-    note:
-      'Dokumen ini tidak mencantumkan tanggal terbit, nomor kredensial, maupun saluran verifikasi. Gelar CKL™ bukan bagian dari jalur sertifikasi Kubernetes CNCF/Linux Foundation (CKA/CKAD/CKS).',
   },
 ];
 

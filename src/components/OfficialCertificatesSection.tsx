@@ -10,9 +10,9 @@ import { ProtectedCertificateViewer } from './ProtectedCertificateViewer';
 /**
  * Dokumen sertifikat resmi, tampil di bawah Profil Pendiri.
  *
- * Dokumen ditampilkan apa adanya (bukan rekayasa ulang) di dalam kanvas
- * berlapis watermark. Penghambat interaksi menekan salinan santai; lihat
- * catatan teknis di ProtectedCertificateViewer soal batas perlindungan.
+ * Dokumen ditampilkan apa adanya di dalam permukaan berlapis watermark.
+ * Penghambat interaksi menekan salinan santai; lihat catatan teknis di
+ * ProtectedCertificateViewer soal batas perlindungan.
  */
 export function OfficialCertificatesSection() {
   // Daftar putih: hanya dokumen yang `sourceFile`-nya terdaftar di
@@ -38,13 +38,6 @@ export function OfficialCertificatesSection() {
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white text-balance lg:text-4xl">
               Sertifikat & Kredensial Resmi
             </h2>
-            <p className="mt-4 text-sm leading-relaxed text-ink-400 lg:text-base">
-              Dokumen asli di bawah ini berasal langsung dari{' '}
-              <code className="font-mono text-[0.85em]">src/assets/images/</code>{' '}
-              — sumber tunggal yang diakui situs ini — dan ditampilkan apa adanya,
-              bukan rekayasa ulang. Nomor kredensial pada dokumen dapat dicek pada
-              masing-masing lembaga penerbit.
-            </p>
           </div>
 
           <div className="flex items-start gap-2.5 rounded-lg border border-white/10 bg-[#0A0E14] px-3.5 py-3 text-[11px] leading-relaxed text-ink-400 lg:max-w-sm">
