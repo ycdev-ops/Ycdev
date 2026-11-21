@@ -38,6 +38,16 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     imageFile: '/sertifikat/nmea-0400.jpg',
   },
   {
+    id: 'codesignal-react',
+    title: 'Front-End Engineering with React',
+    issuer: 'CodeSignal — Certificate of Achievement',
+    issuerShort: 'CodeSignal',
+    issuedDate: '27 April 2025',
+    imageFile: '/sertifikat/codesignal-react.jpg',
+    note:
+      'Sertifikat penyelesaian jalur belajar (learning path), bukan sertifikasi profesional berstandar industri. Keaslian dapat diverifikasi melalui tautan di dokumen.',
+  },
+  {
     id: 'ckl',
     title: 'Certified Kubernetes Leader™ (CKL™)',
     issuer: 'Chartered Institute of Professional Certifications',
