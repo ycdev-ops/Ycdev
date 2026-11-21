@@ -1,5 +1,6 @@
 import { Award, ShieldCheck } from 'lucide-react';
 import {
+  CERTIFICATE_SOURCE_FILES,
   CERTIFICATE_WATERMARK,
   OFFICIAL_CERTIFICATES,
 } from '../data/officialCertificates';
@@ -14,6 +15,14 @@ import { ProtectedCertificateViewer } from './ProtectedCertificateViewer';
  * catatan teknis di ProtectedCertificateViewer soal batas perlindungan.
  */
 export function OfficialCertificatesSection() {
+  // Daftar putih: hanya dokumen yang `sourceFile`-nya terdaftar di
+  // CERTIFICATE_SOURCE_FILES yang boleh tampil. Ini menjaga klaim
+  // "sumber tunggal src/assets/images/" tetap benar saat data bertambah.
+  const allowed = new Set(CERTIFICATE_SOURCE_FILES);
+  const certificates = OFFICIAL_CERTIFICATES.filter((cert) =>
+    allowed.has(cert.sourceFile)
+  );
+
   return (
     <section
       id="sertifikat-resmi"
@@ -30,9 +39,11 @@ export function OfficialCertificatesSection() {
               Sertifikat & Kredensial Resmi
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-ink-400 lg:text-base">
-              Empat dokumen asli di bawah ini dipindai langsung dari lembaran
-              resmi dan ditampilkan apa adanya. Nomor kredensial pada dokumen
-              dapat dicek pada masing-masing lembaga penerbit.
+              Dokumen asli di bawah ini berasal langsung dari{' '}
+              <code className="font-mono text-[0.85em]">src/assets/images/</code>{' '}
+              — sumber tunggal yang diakui situs ini — dan ditampilkan apa adanya,
+              bukan rekayasa ulang. Nomor kredensial pada dokumen dapat dicek pada
+              masing-masing lembaga penerbit.
             </p>
           </div>
 
@@ -42,9 +53,9 @@ export function OfficialCertificatesSection() {
               aria-hidden="true"
             />
             <span>
-              Dokumen dilindungi watermark dan klik kanan dinonaktifkan. Tangkapan
-              layar tetap mungkin dilakukan oleh perangkat — mohon tidak menyebarluaskan
-              dokumen ini tanpa izin YcDev.
+              Watermark dan klik kanan dinonaktifkan; tangkapan layar tetap mungkin
+              dilakukan oleh perangkat — mohon tidak menyebarluaskan dokumen ini
+              tanpa izin YcDev.
             </span>
           </div>
         </div>
@@ -53,7 +64,7 @@ export function OfficialCertificatesSection() {
           data-testid="official-certificates-grid"
           className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2"
         >
-          {OFFICIAL_CERTIFICATES.map((cert) => {
+          {certificates.map((cert) => {
             const item: OfficialCertificate = cert;
             return (
               <ProtectedCertificateViewer

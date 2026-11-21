@@ -1,13 +1,21 @@
 import type { OfficialCertificate } from '../components/ProtectedCertificateViewer';
 
 /**
- * Dokumen sertifikat resmi milik YcDev. Berkas disimpan di `public/sertifikat/`
- * dan ditampilkan lewat ProtectedCertificateViewer (kanvas + watermark +
- * klik kanan dinonaktifkan).
+ * Dokumen sertifikat resmi milik YcDev.
  *
- * Catatan kejujuran: untuk dokumen yang tidak mencantumkan nomor kredensial
- * maupun saluran verifikasi, `note` menjelaskannya — supaya pengunjung tidak
- * menganggap setiap dokumen setara kredibilitasnya.
+ * SUMBER TUNGGAL: `src/assets/images/`. Lima berkas di folder itulah satu-satunya
+ * dokumen yang diakui situs ini; tidak ada berkas sertifikat lain di luar sana.
+ * `CERTIFICATE_SOURCE_FILES` menegaskan daftar itu dan dipakai untuk menguji
+ * bahwa setiap dokumen yang tampil benar-benar asal dari folder tersebut.
+ *
+ * `sourceFile` menyimpan path asli (dengan spasi & huruf persis),
+ * `imageFile` menunjuk PNG asli yang dipublikasikan di `public/dokumen-asli/`
+ * dengan nama web-safe — isi pikselnya sama dengan berkas sumber, hanya
+ * kanal alpha-nya digabung ke putih dan nama berkasnya dirapikan. Bukan rekayasa ulang.
+ *
+ * Catatan kejujuran ditampilkan untuk dokumen yang tidak mencantumkan nomor
+ * kredensial atau saluran verifikasi, agar pengunjung tidak menganggap semua
+ * dokumen setara kredibilitasnya.
  */
 export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
   {
@@ -16,7 +24,8 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuer: 'The Cloud Native Computing Foundation (CNCF)',
     issuerShort: 'CNCF',
     issuedDate: '20 Maret 2025',
-    imageFile: '/sertifikat/cks.jpg',
+    sourceFile: 'src/assets/images/Certified Kubernetes Security Specialist.png',
+    imageFile: '/dokumen-asli/certified-kubernetes-security-specialist-cks.png',
   },
   {
     id: 'aws-sap',
@@ -25,7 +34,9 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuerShort: 'AWS',
     issuedDate: '7 Oktober 2020',
     validUntil: '7 Oktober 2023',
-    imageFile: '/sertifikat/aws-sap.jpg',
+    sourceFile:
+      'src/assets/images/AWS Certified Solutions Architect - Professional.png',
+    imageFile: '/dokumen-asli/aws-solutions-architect-professional.png',
   },
   {
     id: 'nmea-0400',
@@ -35,7 +46,8 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuedDate: '13 Maret 2025',
     validUntil: '31 Maret 2029',
     credentialCode: 'NMEA 5813',
-    imageFile: '/sertifikat/nmea-0400.jpg',
+    sourceFile: 'src/assets/images/NMEA 0400 Installation Standard.png',
+    imageFile: '/dokumen-asli/nmea-0400-installation-standard.png',
   },
   {
     id: 'codesignal-react',
@@ -43,7 +55,8 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     issuer: 'CodeSignal — Certificate of Achievement',
     issuerShort: 'CodeSignal',
     issuedDate: '27 April 2025',
-    imageFile: '/sertifikat/codesignal-react.jpg',
+    sourceFile: 'src/assets/images/Front-End Engineering with React.png',
+    imageFile: '/dokumen-asli/codesignal-frontend-engineering-react.png',
     note:
       'Sertifikat penyelesaian jalur belajar (learning path), bukan sertifikasi profesional berstandar industri. Keaslian dapat diverifikasi melalui tautan di dokumen.',
   },
@@ -52,10 +65,17 @@ export const OFFICIAL_CERTIFICATES: OfficialCertificate[] = [
     title: 'Certified Kubernetes Leader™ (CKL™)',
     issuer: 'Chartered Institute of Professional Certifications',
     issuerShort: 'CIPC',
-    imageFile: '/sertifikat/ckl.jpg',
+    sourceFile: 'src/assets/images/Certified Kubernetes LeaderTM_CKLTM.png',
+    imageFile: '/dokumen-asli/certified-kubernetes-leader-ckl.png',
     note:
       'Dokumen ini tidak mencantumkan tanggal terbit, nomor kredensial, maupun saluran verifikasi. Gelar CKL™ bukan bagian dari jalur sertifikasi Kubernetes CNCF/Linux Foundation (CKA/CKAD/CKS).',
   },
 ];
 
 export const CERTIFICATE_WATERMARK = 'YcDev · Dokumen Resmi';
+
+/**
+ * Berkas-berkas di `src/assets/images/` yang merupakan dokumen sertifikat.
+ * Dipakai sebagai daftar putih — hanya yang terdaftar di sini yang tampil.
+ */
+export const CERTIFICATE_SOURCE_FILES = OFFICIAL_CERTIFICATES.map((c) => c.sourceFile);

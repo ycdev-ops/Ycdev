@@ -10,6 +10,11 @@ export interface OfficialCertificate {
   validUntil?: string;
   credentialCode?: string;
   imageFile: string;
+  /**
+   * Nama berkas asli di `src/assets/images/`. Berkas di folder itulah sumber
+   * tunggal dokumen yang diakui situs ini.
+   */
+  sourceFile: string;
   /** Catatan kejujuran: tampilkan bila dokumen tidak punya nomor/verifikasi. */
   note?: string;
 }
