@@ -119,9 +119,10 @@ export default function App() {
 
         <CaseStudiesSection />
 
-        <OfficialCertificatesSection />
-
         <CredibilityAndCertificationsSection />
+
+        {/* Dokumen resmi & kredensial berada di bawah Profil Pendiri. */}
+        <OfficialCertificatesSection />
 
         <TeamSection onConsultTeamMember={handleApplyScope} />
 

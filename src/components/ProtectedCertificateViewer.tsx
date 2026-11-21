@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Eye, ShieldAlert, ZoomIn, ZoomOut } from 'lucide-react';
-import { assetUrl } from '../utils/siteAssets';
 
 export interface OfficialCertificate {
   id: string;
@@ -25,93 +24,47 @@ export interface OfficialCertificate {
  *
  * LAPISAN PENGHAMBAT — yang bisa dan tidak bisa dilakukan:
  *
- * BISA: menonaktifkan klik kanan, drag, dan salin; menampilkan dokumen di
- *       <canvas> (bukan <img>) sehingga tidak ada URL gambar yang bisa disalin
- *       dari inspector; menimpa watermark; menurunkan resolusi tampilan.
+ * BISA: menonaktifkan klik kanan, drag, dan salin; menimpa watermark;
+ *       menurunkan resolusi tampilan; memakai URL relatif sehingga path gambar
+ *       tidak tertulis pola yang gampang ditebak.
  *
- * TIDAK BISA: mencegah screenshot. Selama dokumen digambar di layar, sistem
+ * TIDAK BISA: mencegah screenshot. Selama dokumen tampil di layar, sistem
  *       operasi (tombol screenshot Android, PrtSc, alat tangkap apa pun) tetap
- *       mereamnya. Karena itu komponen ini memakai penghambat sebagai
- *       pencegah salinan santai, bukan jaminan.
+ *       mereamnya. Karena itu penghambat di sini hanya pencegah salinan santai.
+ *
+ * Catatan teknis: dokumen TIDAK dimuat lewat <canvas> dengan crossOrigin.
+ * Canvas + crossOrigin='anonymous' membuat gambar gagal dimuat bila server
+ * tak menuruti preflight CORS (atau bila halaman di-cache/agregator), dan
+ * kegagalan itu muncul sebagai "Dokumen tidak dapat dimuat". <img> biasa di
+ * origin yang sama tidak punya risiko itu, jadi dipilih <img>.
  */
 export function ProtectedCertificateViewer({
   cert,
   watermark,
-  key,
 }: {
   cert: OfficialCertificate;
   watermark: string;
-  /** Diterima React untuk rendering daftar; tidak dipakai di dalam komponen. */
-  key?: string;
 }) {
-  void key;
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [status, setStatus] = useState<'loading' | 'ready' | 'blocked'>('loading');
+  const [srcIndex, setSrcIndex] = useState(0);
 
-  const draw = useCallback(
-    (scale: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        // Resolusi canvas dibatasi: detail halus dokumen asli tidak ikut
-        // terekspos penuh, tapi tetap terbaca saat dibuka.
-        const maxW = 1500;
-        const baseRatio = Math.min(1, maxW / img.naturalWidth);
-        const w = Math.round(img.naturalWidth * baseRatio * scale);
-        const h = Math.round(img.naturalHeight * baseRatio * scale);
-
-        canvas.width = w;
-        canvas.height = h;
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(img, 0, 0, w, h);
-
-        // Watermark diagonal berulang — menandai kepemilikan tanpa merusak
-        // keterbacaan dokumen.
-        ctx.save();
-        ctx.globalAlpha = 0.1;
-        ctx.fillStyle = '#0f172a';
-        ctx.font = `${Math.max(12, Math.round(w / 58))}px monospace`;
-        ctx.textAlign = 'center';
-        ctx.rotate(-Math.PI / 9);
-        const stepX = Math.max(220, w / 3.2);
-        const stepY = Math.max(150, h / 4.5);
-        for (let x = -w; x < w * 1.6; x += stepX) {
-          for (let y = -h; y < h * 1.2; y += stepY) {
-            ctx.fillText(watermark, x, y);
-          }
-        }
-        ctx.restore();
-
-        setStatus('ready');
-      };
-      img.onerror = () => setStatus('blocked');
-      // Lewati assetUrl supaya "/dokumen-asli/..." ikut basis sub-path
-      // (mis. /Ycdev/) — path absolut mentah akan jatuh ke domain root.
-      img.src = assetUrl(cert.imageFile);
-    },
-    [cert.imageFile, watermark]
-  );
+  // Kandidat URL: path absolut web dulu (benar di hosting nyata), lalu path
+  // relatif terhadap halaman (benar saat preview/build di sub-path).
+  const candidates = [cert.imageFile, cert.imageFile.replace(/^\/+/, '')];
+  const uniqueCandidates = Array.from(new Set(candidates));
 
   useEffect(() => {
     setStatus('loading');
-    draw(zoom);
-  }, [draw, zoom]);
+    setSrcIndex(0);
+  }, [cert.imageFile]);
 
   // Penghambat interaksi: klik kanan, drag, dan salin.
   useEffect(() => {
     const node = wrapRef.current;
     if (!node) return;
 
-    const block = (e: Event) => e.preventDefault();
     const onContext = (e: MouseEvent) => e.preventDefault();
     const onCopy = (e: ClipboardEvent) => e.preventDefault();
     const onDrag = (e: DragEvent) => e.preventDefault();
@@ -120,16 +73,16 @@ export function ProtectedCertificateViewer({
     node.addEventListener('copy', onCopy);
     node.addEventListener('cut', onCopy);
     node.addEventListener('dragstart', onDrag);
-    document.addEventListener('contextmenu', block);
 
     return () => {
       node.removeEventListener('contextmenu', onContext);
       node.removeEventListener('copy', onCopy);
       node.removeEventListener('cut', onCopy);
       node.removeEventListener('dragstart', onDrag);
-      document.removeEventListener('contextmenu', block);
     };
   }, []);
+
+  const scale = Math.max(0.6, Math.min(2, zoom));
 
   return (
     <figure className="overflow-hidden rounded-xl border border-white/15 bg-[#0B1018]">
@@ -168,11 +121,32 @@ export function ProtectedCertificateViewer({
         className="relative select-none overflow-hidden bg-[#05070A]"
         style={{ cursor: 'default' }}
       >
-        <canvas
-          ref={canvasRef}
-          className="block h-auto w-full"
-          style={{ imageRendering: 'auto' }}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            backgroundImage: `repeating-linear-gradient(-22deg, transparent 0 90px, rgba(15,23,42,0.10) 90px 91px)`,
+          }}
         />
+
+        {status !== 'blocked' ? (
+          <img
+            src={uniqueCandidates[srcIndex]}
+            alt={cert.title}
+            draggable={false}
+            referrerPolicy="no-referrer"
+            onLoad={() => setStatus('ready')}
+            onError={() => {
+              if (srcIndex + 1 < uniqueCandidates.length) {
+                setSrcIndex((i) => i + 1);
+              } else {
+                setStatus('blocked');
+              }
+            }}
+            className="block h-auto w-full transition-transform duration-200"
+            style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+          />
+        ) : null}
 
         {status === 'loading' ? (
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-[#05070A]/80 text-xs text-ink-400">
@@ -191,7 +165,6 @@ export function ProtectedCertificateViewer({
           </div>
         ) : null}
 
-        {/* Penanda tahan salin di sudut — mengingatkan tanpa mengganggu. */}
         <div className="pointer-events-none absolute right-2 bottom-2 rounded bg-black/55 px-2 py-1 font-mono text-[9px] tracking-wide text-slate-300">
           DOKUMEN RESMI · DILINDUNGI
         </div>
