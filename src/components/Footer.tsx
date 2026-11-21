@@ -169,7 +169,7 @@ export function Footer() {
             Produk
           </a>
           <a href="#profil-pendiri" className="hover:text-white">
-            Profil & Sertifikasi
+            Profil Pendiri
           </a>
           <a href="#tim-ycdev" className="hover:text-white">
             Tim YcDev

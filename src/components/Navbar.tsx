@@ -23,7 +23,7 @@ interface NavbarProps {
 
 const NAV_LINKS = [
   { href: '#lab-3d', label: '3D Lab', icon: Cpu },
-  { href: '#profil-pendiri', label: 'Sertifikasi', icon: Award },
+  { href: '#profil-pendiri', label: 'Profil Pendiri', icon: Award },
   { href: '#tim-ycdev', label: 'Tim', icon: Users },
   { href: '#klien-partner', label: 'Klien', icon: Globe2 },
   { href: '#portal-klien', label: 'Portal Klien', icon: Lock },

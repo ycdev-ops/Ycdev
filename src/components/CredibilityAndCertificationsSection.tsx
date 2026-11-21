@@ -138,7 +138,8 @@ export function CredibilityAndCertificationsSection() {
         </div>
 
         {/* Comprehensive Certifications Matrix Across All Domains */}
-        <div id="sertifikasi" className="mt-20 scroll-mt-24">
+        {/* Bagian sertifikasi disembunyikan dari tampilan. */}
+        <div id="sertifikasi" className="mt-20 scroll-mt-24" hidden>
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div className="max-w-2xl">
               <p className="text-xs font-medium tracking-wide text-sky-400">
@@ -150,13 +151,6 @@ export function CredibilityAndCertificationsSection() {
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
                 Pembuktian formal melengkapi pengalaman autodidak lapangan—mencakup keamanan
                 ofensif, firmware IoT, arsitektur cloud, sistem terdistribusi, hingga elektronika maritim.
-              </p>
-              <p className="mt-3 inline-flex items-start gap-2 rounded-lg border border-white/10 bg-[#0A0E14] px-3 py-2 text-[11px] leading-relaxed text-slate-400">
-                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-400" aria-hidden="true" />
-                <span>
-                  Kartu di bawah adalah ringkasan katalog kompetensi. Dokumen resmi (scan/PDF)
-                  ditampilkan apa adanya begitu diunggah—bukan hasil gambar ulang.
-                </span>
               </p>
             </div>
 
