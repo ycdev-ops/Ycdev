@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ycdev-ops.github.io/Ycdev/sitemap.xml
