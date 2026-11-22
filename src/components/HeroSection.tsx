@@ -11,12 +11,13 @@ export function HeroSection({ onConsultClick }: HeroSectionProps) {
   return (
     <section
       id="top"
-      className="section-rule relative z-10 flex min-h-[calc(100vh-68px)] flex-col justify-between border-b border-white/10"
+      className="section-rule relative z-0 flex min-h-[calc(100vh-68px)] flex-col justify-between border-b border-white/10 bg-transparent"
     >
-      {/* Subtle directional gradient scrim on the left so text stays WCAG AA crisp over live 3D satellites */}
+      {/* Scrim penjaga keterbacaan teks di sisi kiri saja, tembus ke latar
+          orbital di belakangnya (tanpa background penutup). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#05070A]/90 via-[#05070A]/55 to-transparent"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#05070A]/80 via-[#05070A]/25 to-transparent"
       />
 
       {/* Penanda posisi di halaman, lengkap dengan struktur halaman. */}

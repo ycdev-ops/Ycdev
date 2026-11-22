@@ -93,7 +93,10 @@ export default function App() {
         onSelectProduct={handleSelectProduct}
       />
 
-      <main className="relative z-10">
+      {/* Tanpa z-index: konteks susun (stacking context) di sini akan menahan
+          semua section di atasnya, sementara latar orbital fixed z-0 di
+          belakangnya jadi tidak pernah terlihat. */}
+      <main className="relative">
         <HeroSection onConsultClick={scrollToContact} />
 
         <Interactive3DLab

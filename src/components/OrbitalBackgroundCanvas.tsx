@@ -179,19 +179,27 @@ export function OrbitalBackgroundCanvas() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#05070A]"
     >
-      <div
-        ref={mountRef}
-        data-testid="orbital-background-canvas"
-        className="h-full w-full"
-      />
-      {/* Latar statis: selalu ada, dengan atau tanpa WebGL. */}
+      {/* Latar statis paling bawah: zIndex eksplisit supaya urutan tumpukan
+          tidak bergantung pada urutan DOM. Tanpa ini, div gradien ini
+          (yang terletak SETELAH host canvas di DOM) menutupi satelit,
+          radome, dan horizon dari scene WebGL. */}
       <div
         aria-hidden="true"
         data-testid="orbital-static-backdrop"
+        style={{ zIndex: 0 }}
         className="absolute inset-0 bg-gradient-to-b from-[#05070A] via-[#09111E] to-[#05070A]"
       />
+      <div
+        ref={mountRef}
+        data-testid="orbital-background-canvas"
+        style={{ zIndex: 1 }}
+        className="absolute inset-0"
+      />
       {contextLost && (
-        <div className="absolute inset-0 bg-gradient-to-b from-[#05070A] via-[#09111E] to-[#05070A]" />
+        <div
+          style={{ zIndex: 2 }}
+          className="absolute inset-0 bg-gradient-to-b from-[#05070A] via-[#09111E] to-[#05070A]"
+        />
       )}
     </div>
   );
