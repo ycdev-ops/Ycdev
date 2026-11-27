@@ -1,0 +1,74 @@
+{
+  "name": "YcDev - Lead Capture & Auto-Reply WhatsApp",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "wa-incoming", "responseMode": "onReceived", "options": {} },
+      "id": "webhook1",
+      "name": "Webhook WA Incoming",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "options": { "temperature": 0.7, "maxTokens": 300 },
+        "messages": {
+          "values": [
+            { "role": "system", "content": "Kamu asisten YcDev AI Automation. Balas singkat, ramah, Bahasa Indonesia, tawarkan demo gratis 7 hari." },
+            { "role": "user", "content": "={{ $json.body.message }}" }
+          ]
+        }
+      },
+      "id": "ai1",
+      "name": "AI Reply",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": { "openAiApi": { "id": "kilo-cred", "name": "Kilo Free" } }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "SHEET_ID", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Leads", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "phone": "={{ $json.body.phone }}",
+            "message": "={{ $json.body.message }}",
+            "ai_reply": "={{ $json.text }}"
+          }
+        }
+      },
+      "id": "sheets1",
+      "name": "Save Lead to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.fonnte.com/send",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "Authorization", "value": "={{ $env.FONNTE_TOKEN }}" } ] },
+        "sendBody": true,
+        "bodyParameters": { "parameters": [ { "name": "target", "value": "={{ $json.body.phone }}" }, { "name": "message", "value": "={{ $json.text }}" } ] },
+        "options": {}
+      },
+      "id": "wa1",
+      "name": "Send WA Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook WA Incoming": { "main": [ [ { "node": "AI Reply", "type": "main", "index": 0 } ] ] },
+    "AI Reply": { "main": [ [ { "node": "Save Lead to Sheets", "type": "main", "index": 0 } ] ] },
+    "Save Lead to Sheets": { "main": [ [ { "node": "Send WA Reply", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

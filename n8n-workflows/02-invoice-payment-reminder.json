@@ -1,0 +1,17 @@
+{
+  "name": "YcDev - Invoice Payment Reminder",
+  "nodes": [
+    { "parameters": { "rule": { "interval": [ { "field": "hours", "hoursInterval": 24 } ] } }, "id": "cron1", "name": "Daily 09:00", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [240, 300] },
+    { "parameters": { "operation": "read", "documentId": { "__rl": true, "value": "SHEET_ID", "mode": "id" }, "sheetName": { "__rl": true, "value": "Invoices", "mode": "name" }, "filtersUI": { "values": [ { "lookupColumn": "status", "lookupValue": "unpaid" } ] } }, "id": "read1", "name": "Read Unpaid Invoices", "type": "n8n-nodes-base.googleSheets", "typeVersion": 4, "position": [460, 300] },
+    { "parameters": { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [ { "id": "c1", "leftValue": "={{ $json.due_date }}", "rightValue": "={{ $today.toISODate() }}", "operator": { "type": "dateTime", "operation": "before" } } ], "combinator": "and" } }, "id": "if1", "name": "Is Overdue?", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [680, 300] },
+    { "parameters": { "method": "POST", "url": "https://api.fonnte.com/send", "sendHeaders": true, "headerParameters": { "parameters": [ { "name": "Authorization", "value": "={{ $env.FONNTE_TOKEN }}" } ] }, "sendBody": true, "bodyParameters": { "parameters": [ { "name": "target", "value": "={{ $json.phone }}" }, { "name": "message", "value": "Halo {{ $json.customer }}, invoice #{{ $json.invoice_no }} senilai Rp {{ $json.amount }} jatuh tempo {{ $json.due_date }}. Bayar via QRIS: {{ $json.payment_link }}. Terima kasih - YcDev" } ] }, "options": {} }, "id": "wa1", "name": "Send Reminder WA", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4, "position": [900, 220] },
+    { "parameters": { "operation": "update", "documentId": { "__rl": true, "value": "SHEET_ID", "mode": "id" }, "sheetName": { "__rl": true, "value": "Invoices", "mode": "name" }, "columns": { "mappingMode": "defineBelow", "value": { "status": "reminded", "last_reminder": "={{ $now.toISO() }}" }, "matchingColumns": [ "invoice_no" ] } }, "id": "upd1", "name": "Mark Reminded", "type": "n8n-nodes-base.googleSheets", "typeVersion": 4, "position": [1120, 220] }
+  ],
+  "connections": {
+    "Daily 09:00": { "main": [ [ { "node": "Read Unpaid Invoices", "type": "main", "index": 0 } ] ] },
+    "Read Unpaid Invoices": { "main": [ [ { "node": "Is Overdue?", "type": "main", "index": 0 } ] ] },
+    "Is Overdue?": { "main": [ [ { "node": "Send Reminder WA", "type": "main", "index": 0 } ], [] ] },
+    "Send Reminder WA": { "main": [ [ { "node": "Mark Reminded", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

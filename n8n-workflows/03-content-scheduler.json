@@ -1,0 +1,13 @@
+{
+  "name": "YcDev - Content Scheduler IG/TikTok",
+  "nodes": [
+    { "parameters": { "rule": { "interval": [ { "field": "hours", "hoursInterval": 24 } ] } }, "id": "cron1", "name": "Daily 07:00", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [240, 300] },
+    { "parameters": { "model": "nvidia/nemotron-3-ultra-550b-a55b:free", "options": { "temperature": 0.8, "maxTokens": 280 }, "messages": { "values": [ { "role": "system", "content": "Buat 1 caption Instagram/TikTok Bahasa Indonesia untuk UMKM, max 120 kata, 5 hashtag relevan, CTA demo gratis YcDev AI Automation." }, { "role": "user", "content": "Topik hari ini: {{ $now.format('dddd') }} — tips otomasi bisnis" } ] } }, "id": "ai1", "name": "Generate Caption", "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi", "typeVersion": 1, "position": [460, 300], "credentials": { "openAiApi": { "id": "kilo-cred", "name": "Kilo Free" } } },
+    { "parameters": { "operation": "append", "documentId": { "__rl": true, "value": "SHEET_ID", "mode": "id" }, "sheetName": { "__rl": true, "value": "ContentQueue", "mode": "name" }, "columns": { "mappingMode": "defineBelow", "value": { "date": "={{ $today.toISODate() }}", "caption": "={{ $json.text }}", "status": "draft" } } }, "id": "sheets1", "name": "Queue Caption", "type": "n8n-nodes-base.googleSheets", "typeVersion": 4, "position": [680, 300] }
+  ],
+  "connections": {
+    "Daily 07:00": { "main": [ [ { "node": "Generate Caption", "type": "main", "index": 0 } ] ] },
+    "Generate Caption": { "main": [ [ { "node": "Queue Caption", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}
